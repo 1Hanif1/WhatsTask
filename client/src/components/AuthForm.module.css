@@ -3,6 +3,7 @@
   display: grid;
   grid-template-columns: 50% 50%;
   min-height: 100vh;
+  position: relative;
 }
 
 .left {
@@ -108,4 +109,21 @@
 
 .hide {
   display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .left {
+    position: absolute;
+    height: 100%;
+    width: 30vw;
+  }
+
+  .right {
+    position: absolute;
+    left: 5rem;
+  }
+  .form {
+    padding: 8rem;
+    font-size: 0.8rem;
+  }
 }
