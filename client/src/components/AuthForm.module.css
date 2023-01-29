@@ -6,7 +6,7 @@
 }
 
 .left {
-  background: url(./pattern.jpg) center #0b2545;
+  background: url(../assets/pattern.jpg) center #0b2545;
   /* background-size: cover; */
   background-size: 10em;
 }
@@ -66,11 +66,14 @@
   margin-bottom: 1em;
 }
 
-.form__button {
+.actions {
   display: flex;
+  gap: 1rem;
   justify-content: center;
+  align-items: center;
 }
-.form__button button {
+
+.actions button {
   background-color: #0b2545;
   color: white;
   text-transform: uppercase;
@@ -80,4 +83,29 @@
   letter-spacing: 0.2em;
   cursor: pointer;
   border: none;
+}
+
+.actions a {
+  text-decoration: none;
+  background-color: #034fad;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1.5em;
+  padding: 0.5em 1em;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  border: none;
+}
+
+.actions button:hover {
+  background-color: #0b2545;
+}
+
+.actions a:hover {
+  background-color: #0b2545;
+}
+
+.hide {
+  display: none;
 }
