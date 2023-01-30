@@ -1,0 +1,29 @@
+.video {
+  font-size: 1vw;
+  padding: 3em 3em;
+}
+.video__title {
+  text-align: center;
+  font-size: 2em;
+  font-weight: 500;
+}
+.video__main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5em 0em;
+}
+.video__main video {
+  width: 70%;
+  height: auto;
+}
+.video__link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+}
+.video__link a {
+  padding: 0.5em 3em;
+  font-weight: bold;
+}
