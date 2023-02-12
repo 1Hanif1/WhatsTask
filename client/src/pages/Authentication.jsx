@@ -90,6 +90,6 @@ export async function action({ request }) {
     expiration.setHours(expiration.getHours() + 1);
     localStorage.setItem("expiration", expiration.toISOString());
 
-    return redirect("/auth?mode=login");
+    return redirect("/dashboard");
   }
 }

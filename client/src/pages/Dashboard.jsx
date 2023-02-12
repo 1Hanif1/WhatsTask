@@ -1,7 +1,9 @@
+import DashboardComponent from "../components/DashboardComponent";
+
 function Dashboard() {
   return (
     <>
-      <h1>Dashboard</h1>
+      <DashboardComponent></DashboardComponent>
     </>
   );
 }
