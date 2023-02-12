@@ -1,0 +1,246 @@
+.dashboard {
+  font-size: 1vw;
+  display: grid;
+  grid-template-rows: 7% 7% 86%;
+  grid-template-columns: 60% 40%;
+  grid-template-areas:
+    "title title"
+    "member member"
+    "main active";
+
+  .listname {
+    grid-area: title;
+  }
+  .member__container {
+    grid-area: member;
+  }
+
+  .todolist {
+    grid-area: main;
+  }
+
+  .activetask {
+    grid-area: active;
+    background-color: #265caa;
+  }
+}
+
+.listname,
+.member__container {
+  background-color: #0b2545;
+  text-align: center;
+  color: white;
+  font-size: 1.5em;
+  padding: 0.5em;
+}
+
+.member__container {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1em;
+  align-items: center;
+
+  button {
+    background-color: #265caa;
+    color: white;
+    border: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    font-size: 0.75em;
+  }
+}
+
+.todolist {
+  display: grid;
+  grid-template-rows: 45% 5% 40% 10%;
+  &__subtitle,
+  &__input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__subtitle {
+    background-color: #265caa;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__input {
+    input {
+      width: 90%;
+      outline: none;
+      border: 0.2em solid #0b2545;
+      font-size: 1em;
+      padding: 0.5em;
+    }
+  }
+
+  &__active,
+  &__completed {
+    max-height: 40em;
+    overflow-y: scroll;
+    .task {
+      padding: 1em;
+      font-size: 1.25em;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .checkmark {
+      width: 1.2em;
+      height: 1.2em;
+      padding: 0.2em;
+      border: 0.1em solid #0b2545;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      margin-right: 0.5em;
+      cursor: pointer;
+    }
+  }
+
+  &__completed {
+    max-height: 38em;
+    .task {
+      text-decoration: line-through;
+    }
+    .checkmark {
+      background-color: #0b2545;
+    }
+  }
+}
+
+.activetask {
+  padding: 1.5em;
+  & > * {
+    margin-bottom: 1em;
+  }
+  &__title {
+    color: white;
+    text-align: center;
+    font-size: 1.5em;
+  }
+
+  &__deadline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0b2545;
+    color: white;
+    padding: 0.5em;
+    input {
+      width: 80%;
+      height: 2.5em;
+      font-size: 1em;
+      border: none;
+      padding: 0.25em;
+      outline: none;
+    }
+  }
+}
+
+.subtask,
+.attachment {
+  &__title {
+    background-color: #0b2545;
+    color: white;
+    padding: 0.5em;
+  }
+  &__container {
+    background-color: #eef4ed;
+    padding: 0.5em;
+  }
+  &__main {
+    max-height: 12em;
+    overflow-y: scroll;
+    margin-bottom: 0.25em;
+    scrollbar-width: thin;
+  }
+  &__button {
+    text-align: center;
+    .button {
+      background-color: #265caa;
+      border: none;
+      font-size: 0.8em;
+      color: white;
+      padding: 0.5em 1em;
+      cursor: pointer;
+    }
+  }
+}
+
+.subtask {
+  &__container {
+    .task {
+      padding: 0.5em;
+      margin-bottom: 0.25em;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      &:hover {
+        background-color: #265caa;
+        color: white;
+        cursor: pointer;
+      }
+    }
+    .checkmark {
+      width: 1.2em;
+      height: 1.2em;
+      padding: 0.2em;
+      border: 0.1em solid #0b2545;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      margin-right: 0.5em;
+      cursor: pointer;
+      img {
+        opacity: 0;
+      }
+    }
+
+    .completed {
+      text-decoration: line-through;
+
+      .checkmark {
+        background-color: #0b2545;
+        img {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+.attachment {
+  &__main {
+    .file {
+      padding: 0.5em;
+      margin-bottom: 0.25em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      &:hover {
+        background-color: #265caa;
+        color: white;
+      }
+      &__buttons {
+        display: flex;
+        align-items: center;
+        img {
+          width: 1.25em;
+          margin-right: 0.5em;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  &__button {
+    input {
+      display: none;
+    }
+  }
+}
