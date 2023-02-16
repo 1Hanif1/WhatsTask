@@ -52,13 +52,12 @@ function AuthForm() {
                 />
               </div>
               <div className={classes.actions}>
-                <Link to={`?mode=${isLogin ? "signup" : "login"}`}>
-                  {isLogin ? "Create new user" : "Login"}
-                </Link>
-                OR
                 <button disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit"}
+                  {isSubmitting ? "Submitting..." : "Login"}
                 </button>
+                <Link to={`?mode=${isLogin ? "signup" : "login"}`}>
+                  {isLogin ? "Don't have an account? Register Now" : "Login"}
+                </Link>
               </div>
             </Form>
           </section>
@@ -95,6 +94,7 @@ function AuthForm() {
                 <input
                   name="phoneNumber"
                   id="registerPhoneNumber"
+                  type="number"
                   placeholder="+91"
                   required
                 />
@@ -126,16 +126,22 @@ function AuthForm() {
                 />
               </div>
               <div className={classNames(classes.form__input)}>
-                <input name="userPhoto" type="file" id="photo" />
+                <input
+                  // className={classes.upload__btn}
+                  name="userPhoto"
+                  type="file"
+                  id="photo"
+                />
               </div>
               <div className={classes.actions}>
-                <Link to={`?mode=${isLogin ? "signup" : "login"}`}>
-                  {isLogin ? "Create new user" : "Login"}
-                </Link>
-                OR
                 <button disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit"}
+                  {isSubmitting ? "Submitting..." : "Register"}
                 </button>
+                <Link to={`?mode=${isLogin ? "signup" : "login"}`}>
+                  {isLogin
+                    ? "Create new user"
+                    : "Already have an account? Login"}
+                </Link>
               </div>
             </Form>
           </section>

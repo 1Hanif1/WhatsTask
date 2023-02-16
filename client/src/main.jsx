@@ -8,6 +8,7 @@ import AuthenticationPage, {
   action as authAction,
 } from "./pages/Authentication";
 import ErrorPage from "./pages/Error";
+import Dashboard from "./pages/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,11 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     element: <AuthenticationPage />,
     action: authAction,
+  },
+  {
+    path: "/dashboard",
+    errorElement: <ErrorPage />,
+    element: <Dashboard />,
   },
 ]);
 
