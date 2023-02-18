@@ -1,8 +1,10 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
-const User = require("./../models/User");
+const User = require("../models/User");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
+const Data = require("../models/Data");
+const catchAsyncError = require("../utils/catchAsync");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -30,7 +32,6 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log("HHHHHHHHHHHHHHHHHHHHHH" + req.body.phoneNumber);
   const newUser = await User.create({
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
@@ -51,6 +52,12 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Invalid credentials", 401));
   }
+  // Load User Dashboard Data
+  let userData = await Data.findOne({ uId: user._id });
+  if (!userData)
+    userData = await Data.create({
+      uId: user._id,
+    });
   createSendToken(user, 200, res);
 });
 
@@ -83,3 +90,32 @@ exports.isLoggedIn = async (req, res, next) => {
   }
   next();
 };
+
+exports.protect = catchAsyncError(async (req, res, next) => {
+  // Checking if token is sent or not
+  let userToken = req.headers.authorization;
+  if (!userToken || !userToken.startsWith("Bearer"))
+    throw new AppError("Please get a bearer token to get access", 401);
+
+  userToken = userToken.split(" ")[1];
+  // Verifying the token
+  // const verifyFunction = promisify(jwt.verify);
+  const payload = await promisify(jwt.verify)(
+    userToken,
+    process.env.JWT_SECRET
+  );
+  ////// console.log('Payload: ', payload);
+  // Check if user still exists
+  const user = await User.findById(payload.id).select("+password");
+
+  ////// console.log('USERRRRRRRR: ', user);
+  // if (!user)
+  //   throw new AppError("The user with this token no longer exists", 401);
+  // // check if user changed passwords after the jwt token was issued
+  // if (user.changedPassword(payload.iat))
+  //   throw new AppError("Password was changed. Please log in again", 401);
+
+  // Grant access to the next protected route
+  req.user = user;
+  next();
+});
