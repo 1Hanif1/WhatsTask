@@ -67,9 +67,15 @@
   margin-bottom: 1em;
 }
 
+.upload__btn {
+  background-color: #0b2545;
+  width: 50%;
+}
+
 .actions {
   display: flex;
   gap: 1rem;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }

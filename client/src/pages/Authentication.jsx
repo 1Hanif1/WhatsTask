@@ -26,7 +26,7 @@ export async function action({ request }) {
       passwordConfirm: data.get("passwordConfirm"),
     };
 
-    const res = await fetch("http://127.0.0.1:3000/" + mode, {
+    const res = await fetch(`http://127.0.0.1:3000/${mode}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
