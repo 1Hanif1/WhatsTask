@@ -116,11 +116,12 @@ const personalTaskListSubSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "List must have a name"],
+    unique: true,
   },
   tasks: {
     type: [
       {
-        name: { type: String, default: "" },
+        name: { type: String, required: [true, "Task must have a name"] },
         deadline: { type: Date, default: null },
         subtasks: [taskSubSchema],
         attachments: [attachmentSubSchema],
@@ -132,7 +133,7 @@ const personalTaskListSubSchema = new mongoose.Schema({
 });
 
 const workspaceTaskListSubSchema = new mongoose.Schema({
-  name: { type: String, default: "" },
+  name: { type: String, default: "", unique: true },
   tasks: {
     type: [
       {
@@ -155,18 +156,32 @@ const workspaceSubSchema = new mongoose.Schema({
 
 const schema = new mongoose.Schema({
   uId: { type: String, unique: true },
-  personalTaskList: [
-    {
-      type: personalTaskListSubSchema,
-      default: null,
-    },
-  ],
-  workspace: [
-    {
-      type: workspaceSubSchema,
-      default: null,
-    },
-  ],
+  personalTaskList: {
+    type: [personalTaskListSubSchema],
+    default: [],
+    validate: [
+      {
+        validator: function (value) {
+          const names = value.map((list) => list.name);
+          return names.length === new Set(names).size;
+        },
+        message: "Task list names must be unique",
+      },
+    ],
+  },
+  workspace: {
+    type: [workspaceSubSchema],
+    default: [],
+    validate: [
+      {
+        validator: function (value) {
+          const names = value.map((list) => list.name);
+          return names.length === new Set(names).size;
+        },
+        message: "Workspace names must be unique",
+      },
+    ],
+  },
 });
 
 const Data = mongoose.model("Data", schema);
