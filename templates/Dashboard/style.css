@@ -246,6 +246,11 @@ img {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  transition: color 100ms ease-in-out;
+  cursor: pointer;
+}
+.todolist__active .task:hover, .todolist__completed .task:hover {
+  color: #265caa;
 }
 .todolist__active .checkmark, .todolist__completed .checkmark {
   width: 1.2em;
@@ -271,6 +276,7 @@ img {
 
 .activetask {
   padding: 1.5em;
+  position: relative;
 }
 .activetask > * {
   margin-bottom: 1em;
@@ -280,7 +286,7 @@ img {
   text-align: center;
   font-size: 1.5em;
 }
-.activetask__deadline {
+.activetask__deadline, .activetask__status {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -288,13 +294,36 @@ img {
   color: white;
   padding: 0.5em;
 }
-.activetask__deadline input {
+.activetask__deadline input, .activetask__status input {
   width: 80%;
   height: 2.5em;
   font-size: 1em;
   border: none;
   padding: 0.25em;
   outline: none;
+}
+.activetask__status select {
+  background-color: white;
+  font-size: 1.25em;
+  width: 80%;
+  outline: none;
+  border: none;
+  appearance: none;
+  cursor: pointer;
+}
+.activetask__update {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.activetask__update button {
+  background-color: #0b2545;
+  color: white;
+  font-size: 1.25em;
+  padding: 0.25em 1em;
+  cursor: pointer;
+  border: none;
 }
 
 .subtask__title,

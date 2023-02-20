@@ -85,6 +85,13 @@
         </div>
         <div class="activetask">
           <p class="activetask__title">Current Active task</p>
+          <div class="activetask__status">
+            Status
+            <select type="">
+              <option value="complete">completed</option>
+              <option value="incomplete">Incomplete</option>
+            </select>
+          </div>
           <div class="activetask__deadline">
             Deadline <input type="datetime-local" />
           </div>
@@ -127,6 +134,9 @@
                 <input id="file" type="file" />
               </div>
             </div>
+          </div>
+          <div class="activetask__update">
+            <button>Update</button>
           </div>
         </div>
       </section>

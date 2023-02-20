@@ -86,6 +86,11 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      transition: color 100ms ease-in-out;
+      cursor: pointer;
+      &:hover {
+        color: #265caa;
+      }
     }
     .checkmark {
       width: 1.2em;
@@ -114,6 +119,7 @@
 
 .activetask {
   padding: 1.5em;
+  position: relative;
   & > * {
     margin-bottom: 1em;
   }
@@ -123,7 +129,8 @@
     font-size: 1.5em;
   }
 
-  &__deadline {
+  &__deadline,
+  &__status {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -138,6 +145,33 @@
       padding: 0.25em;
       outline: none;
     }
+  }
+
+  &__status {
+    select {
+      background-color: white;
+      font-size: 1.25em;
+      width: 80%;
+      outline: none;
+      border: none;
+      appearance: none;
+      cursor: pointer;
+    }
+  }
+
+  &__update {
+    button {
+      background-color: #0b2545;
+      color: white;
+      font-size: 1.25em;
+      padding: 0.25em 1em;
+      cursor: pointer;
+      border: none;
+    }
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
