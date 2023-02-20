@@ -51,6 +51,7 @@ exports.createList = catchAsyncError(async (req, res, next) => {
 
 //   res.status(201).json({ status: "success" });
 // });
+
 exports.deleteList = catchAsyncError(async (req, res, next) => {
   const data = await Data.findOneAndUpdate(
     {
@@ -92,6 +93,7 @@ exports.deleteList = catchAsyncError(async (req, res, next) => {
 //     message: `No List with ID:${req.params.id} found`,
 //   });
 // });
+
 exports.getList = catchAsyncError(async (req, res, next) => {
   const data = await Data.findOne({ uId: req.user._id });
 
@@ -192,6 +194,7 @@ exports.addTask = catchAsyncError(async (req, res, next) => {
 //     status: "Success",
 //   });
 // });
+
 exports.deleteTask = catchAsyncError(async (req, res, next) => {
   const data = await Data.findOneAndUpdate(
     {
@@ -219,11 +222,45 @@ exports.deleteTask = catchAsyncError(async (req, res, next) => {
 
 // Add Subtask to a task in personal task list
 exports.updateTask = catchAsyncError(async (req, res, next) => {
-  // Update task title
-  // Update the deadline
-  // Update the Subtasks
-  // Update the file attachments
-  // Send back the results
+  const data = await Data.findOne({ uId: req.user._id });
+
+  if (!data) throw new AppError("No task list found", 404);
+
+  if (!data.personalTaskList.some((list) => list._id == req.params.id))
+    throw new AppError(`No List with ID: ${req.params.id} found`, 404);
+
+  let foundTask = false;
+  let foundList = null;
+
+  data.personalTaskList.forEach((list) => {
+    if (list._id == req.params.id) {
+      list.tasks.forEach((task) => {
+        if (task._id == req.body.taskId) {
+          foundTask = true;
+          foundList = list;
+          task.name = req.body.data.name;
+          task.status = req.body.data.status;
+          task.subtasks = req.body.data.subtasks;
+          task.attachments = req.body.data.attachments;
+          if (req.body.data.deadline) {
+            task.deadline = new Date(req.body.data.deadline);
+          }
+        }
+      });
+    }
+  });
+
+  if (!foundTask) {
+    throw new AppError(`No Task with ID: ${req.body.taskId} found`, 404);
+  }
+
+  await data.validate();
+  await data.save();
+
+  res.status(200).json({
+    status: "Success",
+    data: foundList,
+  });
 });
 
 // Create a new workspace
