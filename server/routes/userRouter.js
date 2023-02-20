@@ -13,7 +13,7 @@ Router.route("/task/list")
 Router.route("/task/list/:id")
   .get(authController.protect, userController.getList)
   .post(authController.protect, userController.addTask)
-  .patch(authController.protect)
+  .patch(authController.protect, userController.updateTask)
   .delete(authController.protect, userController.deleteTask);
 
 module.exports = Router;
