@@ -1,6 +1,6 @@
 import "../index.css";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import classes from "./DashboardComponent.module.css";
 import classNames from "classnames";
 import dummyProfile from "../assets/dummyProfilePic.png";
@@ -13,6 +13,27 @@ import downloadFile from "../assets/downloadFile.svg";
 import deleteFile from "../assets/deleteFile.svg";
 
 function DashboardComponent() {
+  const [userData, setData] = useState("");
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+  const fetchUserDetails = async () => {
+    const jwtCookie = document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith("jwt="));
+    const jwtToken = jwtCookie.split("=")[1];
+    const res = await fetch("http://localhost:3000/api/user", {
+      headers: { Authorization: `Bearer ${jwtToken}` },
+    });
+
+    if (res.status === 422 || res.status === 401) {
+      return res;
+    }
+    const resdata = await res.json();
+    setData(resdata);
+  };
+
+  // console.log(userData);
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({
     name: "",
@@ -87,7 +108,7 @@ function DashboardComponent() {
             <figure className={classes.user__image}>
               <img src={dummyProfile} alt="/" />
             </figure>
-            <p className={classes.user__name}>This is My name</p>
+            <p className={classes.user__name}>{}</p>
           </div>
           <div className={classes.navbar__buttons}>
             <div className={classes.buttons}>
@@ -188,6 +209,13 @@ function DashboardComponent() {
           </div>
           <div className={classes.activetask}>
             <p className={classes.activetask__title}>{selectedTask}</p>
+            <div className={classes.activetask__status}>
+              Status
+              <select type="">
+                <option value="complete">Completed</option>
+                <option value="incomplete">Incomplete</option>
+              </select>
+            </div>
             <div className={classes.activetask__deadline}>
               Deadline{" "}
               <input
@@ -240,6 +268,9 @@ function DashboardComponent() {
                   <input id="file" type="file" />
                 </div>
               </div>
+            </div>
+            <div className={classes.activetask__update}>
+              <button>Update</button>
             </div>
           </div>
         </section>

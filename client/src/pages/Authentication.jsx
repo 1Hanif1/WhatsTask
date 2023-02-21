@@ -26,7 +26,7 @@ export async function action({ request }) {
       passwordConfirm: data.get("passwordConfirm"),
     };
 
-    const res = await fetch(`http://127.0.0.1:3000/${mode}`, {
+    const res = await fetch(`http://127.0.0.1:3000/api/auth/${mode}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,13 +46,13 @@ export async function action({ request }) {
       throw json({ message: "Could not authenticate user." }, { status: 500 });
     }
 
-    const resData = await res.json();
-    console.log(resData);
-    const token = resData.token;
-    localStorage.setItem("token", token);
-    const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 1);
-    localStorage.setItem("expiration", expiration.toISOString());
+    // const resData = await res.json();
+    // console.log(resData);
+    // const token = resData.token;
+    // localStorage.setItem("token", token);
+    // const expiration = new Date();
+    // expiration.setHours(expiration.getHours() + 1);
+    // localStorage.setItem("expiration", expiration.toISOString());
 
     return redirect("/auth?mode=login");
   }
@@ -62,15 +62,17 @@ export async function action({ request }) {
       password: data.get("password"),
     };
 
-    const res = await fetch("http://127.0.0.1:3000/" + mode, {
+    const res = await fetch("http://127.0.0.1:3000/api/auth/" + mode, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "http://127.0.0.1:5173",
         "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+        "Access-Control-Allow-Credentials": true,
         "Access-Control-Allow-Headers":
           "Content-Type, Authorization, X-Requested-With",
       },
+      credentials: "include",
       body: JSON.stringify(authData),
     });
 
@@ -81,15 +83,10 @@ export async function action({ request }) {
     if (!res.ok) {
       throw json({ message: "Could not authenticate user." }, { status: 500 });
     }
-
-    const resData = await res.json();
-    console.log(resData);
-    const token = resData.token;
-    localStorage.setItem("token", token);
-    const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 1);
-    localStorage.setItem("expiration", expiration.toISOString());
-
+    // localStorage.setItem("token", token);
+    // const expiration = new Date();
+    // expiration.setHours(expiration.getHours() + 1);
+    // localStorage.setItem("expiration", expiration.toISOString());
     return redirect("/dashboard");
   }
 }

@@ -156,6 +156,7 @@ const workspaceSubSchema = new mongoose.Schema({
 
 const schema = new mongoose.Schema({
   uId: { type: String, unique: true },
+  user: { type: mongoose.Schema.ObjectId, ref: "User" },
   personalTaskList: {
     type: [personalTaskListSubSchema],
     default: [],
