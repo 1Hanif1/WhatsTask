@@ -6,7 +6,7 @@ exports.getUserData = catchAsyncError(async (req, res, next) => {
   const userData = await Data.find({ uId: req.user._id }).populate("user");
   res.json({
     status: "Success",
-    data: userData,
+    data: userData[0],
   });
 });
 

@@ -9,7 +9,8 @@ import AuthenticationPage, {
 } from "./pages/Authentication";
 import ErrorPage from "./pages/Error";
 import Dashboard from "./pages/Dashboard";
-
+import { loader as dataLoader } from "./components/DashboardComponent";
+import { action as taskAction } from "./components/DashboardComponent";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/",
+        index: true,
         element: <Home />,
       },
     ],
@@ -32,6 +33,8 @@ const router = createBrowserRouter([
     path: "/dashboard",
     errorElement: <ErrorPage />,
     element: <Dashboard />,
+    loader: dataLoader,
+    action: taskAction,
   },
 ]);
 
