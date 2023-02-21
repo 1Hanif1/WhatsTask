@@ -426,4 +426,8 @@ img {
   display: none;
 }
 
+.form {
+  line-height: 2;
+  height: 30rem;
+}
 /*# sourceMappingURL=style.css.map */

@@ -1,8 +1,17 @@
 import "../index.css";
-import axios from "axios";
+import SideBar from "./SideBar";
 import { useState, useEffect } from "react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useSubmit,
+  useNavigation,
+  json,
+  redirect,
+} from "react-router-dom";
 import classes from "./DashboardComponent.module.css";
-import classNames from "classnames";
 import dummyProfile from "../assets/dummyProfilePic.png";
 import settings from "../assets/settings.png";
 import logout from "../assets/logout.png";
@@ -13,92 +22,73 @@ import downloadFile from "../assets/downloadFile.svg";
 import deleteFile from "../assets/deleteFile.svg";
 
 function DashboardComponent() {
-  const [userData, setData] = useState("");
-  useEffect(() => {
-    fetchUserDetails();
-  }, []);
-  const fetchUserDetails = async () => {
-    const jwtCookie = document.cookie
-      .split("; ")
-      .find((cookie) => cookie.startsWith("jwt="));
-    const jwtToken = jwtCookie.split("=")[1];
-    const res = await fetch("http://localhost:3000/api/user", {
-      headers: { Authorization: `Bearer ${jwtToken}` },
-    });
+  const userData = useLoaderData();
+  const user = userData.data.user;
+  // const [tasks, setTasks] = useState([]);
+  // const [newTask, setNewTask] = useState({
+  //   name: "",
+  //   deadline: "",
+  //   subtasks: [],
+  //   status: "incomplete",
+  // });
+  // const [newSubtask, setNewSubtask] = useState({
+  //   name: "",
+  //   deadline: "",
+  //   status: "incomplete",
+  // });
+  const [selectedTask, setSelectedTask] = useState();
+  const [selectedTaskId, setSelectedTaskId] = useState();
 
-    if (res.status === 422 || res.status === 401) {
-      return res;
-    }
-    const resdata = await res.json();
-    setData(resdata);
-  };
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  // };
 
-  // console.log(userData);
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({
-    name: "",
-    deadline: "",
-    subtasks: [],
-    completed: false,
-  });
-  const [newSubtask, setNewSubtask] = useState({
-    name: "",
-    deadline: "",
-    completed: false,
-  });
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [showSideTab, setShowSideTab] = useState(false);
+  // const handleTaskNameChange = (event) => {
+  //   setNewTask({ ...newTask, name: event.target.value });
+  // };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    axios
-      .post("/", newTask)
-      .then((response) => {
-        setTasks([...tasks, response.data]);
-        setNewTask({ name: "", deadline: "", subtasks: [], completed: false });
-      })
-      .catch((error) => console.log(error));
-  };
+  // const handleTaskDeadlineChange = (event) => {
+  //   setNewTask({ ...newTask, deadline: event.target.value });
+  // };
 
-  const handleTaskNameChange = (event) => {
-    setNewTask({ ...newTask, name: event.target.value });
-  };
+  // const handleSubtaskNameChange = (event) => {
+  //   setNewSubtask({ ...newSubtask, name: event.target.value });
+  // };
 
-  const handleTaskDeadlineChange = (event) => {
-    setNewTask({ ...newTask, deadline: event.target.value });
-  };
-
-  const handleSubtaskNameChange = (event) => {
-    setNewSubtask({ ...newSubtask, name: event.target.value });
-  };
-
-  const handleTaskClick = (task) => {
+  const handleTaskClick = (task, id) => {
     setSelectedTask(task);
-    setShowSideTab(!showSideTab);
-    console.log(setSelectedTask);
-    console.log("CLick");
-    console.log(selectedTask);
+    setSelectedTaskId(id);
   };
 
-  const handleAddTask = (event) => {
-    event.preventDefault();
-    if (!newTask) return;
-    const task = {
-      name: newTask.name,
-      subtasks: [],
-      deadline: newTask.deadline,
-      completed: newTask.completed,
-    };
-    setTasks([...tasks, task]);
-    setNewTask("");
-    console.log(task);
-  };
+  // const handleAddTask = (event) => {
+  //   event.preventDefault();
+  //   if (!newTask) return;
+  //   const task = {
+  //     name: newTask.name,
+  //     subtasks: [],
+  //     deadline: newTask.deadline,
+  //     completed: newTask.completed,
+  //   };
+  //   setTasks([...tasks, task]);
+  //   setNewTask("");
+  //   console.log(task);
+  // };
 
-  const handleAddSubtask = (event) => {
-    event.preventDefault();
-    setNewTask({ ...tasks, subtasks: [...tasks.subtasks, newSubtask] });
-    setNewSubtask({ name: "", deadline: "", completed: false });
-  };
+  // const handleAddSubtask = (event) => {
+  //   event.preventDefault();
+  //   setNewTask({ ...tasks, subtasks: [...tasks.subtasks, newSubtask] });
+  //   setNewSubtask({ name: "", deadline: "", completed: false });
+  // };
+
+  const data = useActionData();
+  const navigate = useNavigate();
+  const navigation = useNavigation();
+
+  const isSubmitting = navigation.state === "submitting";
+
+  function cancelHandler() {
+    navigate("..");
+  }
 
   return (
     <>
@@ -108,7 +98,7 @@ function DashboardComponent() {
             <figure className={classes.user__image}>
               <img src={dummyProfile} alt="/" />
             </figure>
-            <p className={classes.user__name}>{}</p>
+            <p className={classes.user__name}>{user.name}</p>
           </div>
           <div className={classes.navbar__buttons}>
             <div className={classes.buttons}>
@@ -123,7 +113,9 @@ function DashboardComponent() {
             </div>
             <div className={classes.todaytask}>
               <img src={todaystask} alt="" /> Today's Task
-              <span className={classes.numtask}>5</span>
+              <span className={classes.numtask}>
+                {userData.data.personalTaskList[0].tasks.length}
+              </span>
             </div>
           </div>
           <div className={classes.navbar__taskcontainer}>
@@ -156,7 +148,9 @@ function DashboardComponent() {
           </div>
         </nav>
         <section className={classes.dashboard}>
-          <p className={classes.listname}>Active List Name Goes here</p>
+          <p className={classes.listname}>
+            {userData.data.personalTaskList[0].name}
+          </p>
           <div className={classes.member__container}>
             <p>
               Members: <span>A, B, C, D</span>
@@ -165,117 +159,122 @@ function DashboardComponent() {
           </div>
           <div className={classes.todolist}>
             <div className={classes["todolist__active"]}>
-              <div className={classes.task}>
-                <div className={classes.checkmark}>
-                  <img src={checkmark} alt="" />
-                </div>
-                <div onClick={() => handleTaskClick("task")}>
-                  This is a task
-                </div>
-              </div>
-              <div className={classes.task}>
-                <div className={classes.checkmark}>
-                  <img src={checkmark} alt="" />
-                </div>
-                <div onClick={() => handleTaskClick("task2")}>
-                  This is a task 2
-                </div>
-              </div>
+              {userData.data.personalTaskList[0].tasks.map((task) => {
+                if (task.status == "incomplete") {
+                  return (
+                    <>
+                      <div key={task._id} className={classes.task}>
+                        <div className={classes.checkmark}>
+                          <img src={checkmark} alt="" />
+                        </div>
+                        <div
+                          onClick={() => handleTaskClick(task.name, task._id)}
+                        >
+                          {" "}
+                          {task.name}
+                        </div>
+                      </div>
+                    </>
+                  );
+                }
+              })}
             </div>
             <p className={classes.todolist__subtitle}>Completed Tasks</p>
             <div className={classes.todolist__completed}>
-              <div className={classes.task}>
-                <div className={classes.checkmark}>
-                  <img src={checkmark} alt="" />
-                </div>
-                This is a task
-              </div>
+              {userData.data.personalTaskList[0].tasks.map((task) => {
+                if (task.status == "complete") {
+                  return (
+                    <>
+                      <div
+                        key={task._id}
+                        className={classes.task}
+                        onClick={() => handleTaskClick(task.name, task._id)}
+                      >
+                        <div className={classes.checkmark}>
+                          <img src={checkmark} alt="" />
+                        </div>
+                        <div> {task.name}</div>
+                      </div>
+                    </>
+                  );
+                }
+              })}
             </div>
-            <form>
+            <Form method="POST">
               <div className={classes.todolist__input}>
-                <input
-                  type="text"
-                  placeholder="Add a new task"
-                  value={newTask.name}
-                  onChange={handleTaskNameChange}
-                />
+                <input type="text" placeholder="Add a new task" name="name" />
                 <div className={classes["subtask__button"]}>
-                  <button className={classes.button} onClick={handleAddTask}>
-                    Add Task
-                  </button>
+                  <button className={classes.button}>Add Task</button>
                 </div>
               </div>
-            </form>
+            </Form>
           </div>
-          <div className={classes.activetask}>
-            <p className={classes.activetask__title}>{selectedTask}</p>
-            <div className={classes.activetask__status}>
-              Status
-              <select type="">
-                <option value="complete">Completed</option>
-                <option value="incomplete">Incomplete</option>
-              </select>
-            </div>
-            <div className={classes.activetask__deadline}>
-              Deadline{" "}
-              <input
-                type="datetime-local"
-                value={newTask.deadline}
-                onChange={handleTaskDeadlineChange}
-              />
-            </div>
-            <div className={classes.subtask}>
-              <p className={classes.subtask__title}>Subtasks</p>
-              <div className={classes["subtask__container"]}>
-                <div className={classes["subtask__main"]}>
-                  <div className={classes.task}>
-                    <div className={classes.checkmark}>
-                      <img src={checkmark} alt="" />
-                    </div>
-                    This is some subtask
-                  </div>
-                  <div className={classNames(classes.task, classes.completed)}>
-                    <div className={classes.checkmark}>
-                      <img src={checkmark} alt="" />
-                    </div>
-                    This is some subtask
-                  </div>
-                </div>
-                <div className={classes["subtask__button"]}>
-                  <button className={classes.button} onClick={handleAddSubtask}>
-                    Add new subtask+
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className={classes.attachment}>
-              <p className={classes["attachment__title"]}>Attachments</p>
-              <div className={classes["attachment__container"]}>
-                <div className={classes["attachment__main"]}>
-                  <div className={classes.file}>
-                    File One
-                    <div className={classes["file__buttons"]}>
-                      <img src={downloadFile} alt="/" />
-                      <img src={deleteFile} alt="/" />
-                    </div>
-                  </div>
-                </div>
-                <div className={classes["attachment__button"]}>
-                  <label for="file" className={classes.button}>
-                    {" "}
-                    Add new attachment+{" "}
-                  </label>
-                  <input id="file" type="file" />
-                </div>
-              </div>
-            </div>
-            <div className={classes.activetask__update}>
-              <button>Update</button>
-            </div>
-          </div>
+          <SideBar
+            userData={userData}
+            selectedTask={selectedTask}
+            selectedTaskId={selectedTaskId}
+          ></SideBar>
         </section>
       </main>
     </>
   );
 }
 export default DashboardComponent;
+
+export async function loader() {
+  const jwtCookie = document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith("jwt="));
+  const jwtToken = jwtCookie.split("=")[1];
+  const res = await fetch("http://127.0.0.1:3000/api/user", {
+    headers: { Authorization: `Bearer ${jwtToken}` },
+    "Access-Control-Allow-Origin": "http://127.0.0.1:5173",
+    "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS, PATCH",
+    "Access-Control-Allow-Credentials": true,
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, X-Requested-With",
+  });
+  const resData = await res.json();
+  return resData;
+}
+
+export async function action({ request }) {
+  const method = request.method;
+  const data = await request.formData();
+  const jwtCookie = document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith("jwt="));
+  const jwtToken = jwtCookie.split("=")[1];
+  // const id = data.get("id");
+  // console.log(data.get("name"));
+  const taskData = {
+    name: data.get("name"),
+    deadline: data.get("deadline") === null ? "" : data.get("deadline"),
+    subtasks: data.get("subtasks") === null ? [] : data.get("subtasks"),
+    attachments:
+      data.get("attachments") === null ? [] : data.get("attachments"),
+    status: data.get("status") === null ? "incomplete" : data.get("status"),
+  };
+
+  const res = await fetch(
+    "http://127.0.0.1:3000/api/user/task/list/63f4d1f360925418803d19ee",
+    {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`,
+        "Access-Control-Allow-Origin": "http://127.0.0.1:5173",
+        "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Headers":
+          "Content-Type, Authorization, X-Requested-With",
+      },
+      credentials: "include",
+      body: JSON.stringify(taskData),
+    }
+  );
+
+  if (res.status === 200 || res.status === 204) {
+    return res;
+  }
+}
