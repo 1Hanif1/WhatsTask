@@ -82,41 +82,10 @@ const assignedMemberSubSchema = new mongoose.Schema({
   phoneNumber: String,
 });
 
-// const personalTaskListSubSchema = new mongoose.Schema({
-//   name: {
-//     type: String,
-//     required: [true, "List must have a name"],
-//   },
-//   tasks: [
-//     {
-//       name: { type: String, default: "" },
-//       deadline: { type: Date, default: null },
-//       subtasks: [taskSubSchema],
-//       attachments: [attachmentSubSchema],
-//       status: { type: String, default: "incomplete" },
-//     },
-//   ],
-// });
-
-// const workspaceTaskListSubSchema = new mongoose.Schema({
-//   name: { type: String, default: "" },
-//   tasks: [
-//     {
-//       name: { type: String, default: "" },
-//       deadline: { type: Date, default: null },
-//       subtasks: [taskSubSchema],
-//       attachments: [attachmentSubSchema],
-//       status: { type: String, default: "incomplete" },
-//       assignedMembers: [assignedMemberSubSchema],
-//     },
-//   ],
-// });
-
 const personalTaskListSubSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "List must have a name"],
-    unique: true,
   },
   tasks: {
     type: [
@@ -133,11 +102,11 @@ const personalTaskListSubSchema = new mongoose.Schema({
 });
 
 const workspaceTaskListSubSchema = new mongoose.Schema({
-  name: { type: String, default: "", unique: true },
+  name: { type: String, required: [true, "List must have a name"] },
   tasks: {
     type: [
       {
-        name: { type: String, default: "" },
+        name: { type: String, required: [true, "Task must have a name"] },
         deadline: { type: Date, default: null },
         subtasks: [taskSubSchema],
         attachments: [attachmentSubSchema],
@@ -158,7 +127,26 @@ const schema = new mongoose.Schema({
   uId: { type: String, unique: true },
   user: { type: mongoose.Schema.ObjectId, ref: "User" },
   personalTaskList: {
-    type: [personalTaskListSubSchema],
+    type: [
+      {
+        name: {
+          type: String,
+          required: [true, "List must have a name"],
+        },
+        tasks: {
+          type: [
+            {
+              name: { type: String, required: [true, "Task must have a name"] },
+              deadline: { type: Date, default: null },
+              subtasks: [taskSubSchema],
+              attachments: [attachmentSubSchema],
+              status: { type: String, default: "incomplete" },
+            },
+          ],
+          default: [],
+        },
+      },
+    ],
     default: [],
     validate: [
       {

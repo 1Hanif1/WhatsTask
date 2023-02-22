@@ -19,7 +19,6 @@ const createSendToken = (user, statusCode, res) => {
     sameSite: "none",
     secure: true,
   };
-
   res.cookie("jwt", token, cookieOptions);
   user.password = undefined;
 
@@ -53,13 +52,21 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError("Invalid credentials", 401));
   }
+  // console.log(user);
   // Load User Dashboard Data
   let userData = await Data.findOne({ uId: user._id });
-  if (!userData)
-    userData = await Data.create({
-      uId: user._id,
-      user: user._id,
-    });
+  if (!userData) {
+    try {
+      userData = await Data.create({
+        uId: user._id,
+        user: user._id,
+      });
+    } catch (error) {
+      console.log(error);
+      return next(new AppError("Could not create user data", 500));
+    }
+  }
+
   createSendToken(user, 200, res);
 });
 
