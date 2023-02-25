@@ -53,17 +53,18 @@
   border: none;
 }
 
-.actions a {
+.actions p {
+  display: flex;
+  font-size: 1.25em;
+}
+
+.actions p > a {
   text-decoration: none;
-  background-color: #034fad;
-  color: white;
-  text-transform: uppercase;
-  font-weight: 600;
-  font-size: 1.5em;
-  padding: 0.5em 1em;
-  letter-spacing: 0.2em;
+  color: #034fad;
+  font-weight: 400;
   cursor: pointer;
   border: none;
+  margin-left: 0.25em;
 }
 
 .actions button:hover {
@@ -71,5 +72,13 @@
 }
 
 .actions a:hover {
-  background-color: #0b2545;
+  text-decoration: underline;
+}
+
+.error {
+  color: red;
+  font-size: 1.25em;
+  text-align: center;
+  height: 1.25em;
+  margin-block: 1em;
 }

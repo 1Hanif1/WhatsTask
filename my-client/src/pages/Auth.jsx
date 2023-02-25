@@ -2,6 +2,7 @@ import classes from "./Auth.module.css";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import { useSearchParams } from "react-router-dom";
+
 function RenderForm() {
   const [searchParams] = useSearchParams();
   if (searchParams.get("mode") === "register") return <Register />;
@@ -10,6 +11,7 @@ function RenderForm() {
     return null;
   }
 }
+
 export default function Auth() {
   return (
     <>
