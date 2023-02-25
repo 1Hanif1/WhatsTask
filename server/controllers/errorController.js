@@ -5,9 +5,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateNameError = (err) => {
-  const message = ` ${
-    err.message.match(/".*?"/g)[0]
-  } already exists. Please enter a valid new name`;
+  const message = `Email or phone number already exists.`;
   return new AppError(message, 400);
 };
 
@@ -55,7 +53,16 @@ module.exports = (err, req, res, next) => {
 
   if (process.env.NODE_ENV.trim() === "development") {
     // console.log(err.name);
-    sendErrorDev(err, res);
+    let error = { ...err };
+
+    if (err.name === "CastError") error = handleCastErrorDB(err);
+    if (err.name === "ValidationError") error = handleValidationErrorDB(err);
+    if (err.code === 11000) error = handleDuplicateNameError(err);
+    if (err.name === "JsonWebTokenError") error = handleJWTError();
+    if (err.name === "TokenExpiredError") error = handleJWTExpiredError();
+
+    sendErrorProd(error, res);
+    // sendErrorDev(err, res);
   } else if (process.env.NODE_ENV.trim() === "production") {
     let error = { ...err };
 
