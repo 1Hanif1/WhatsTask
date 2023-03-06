@@ -75,10 +75,13 @@
   text-decoration: underline;
 }
 
-.error {
-  color: red;
+.message {
   font-size: 1.25em;
   text-align: center;
   height: 1.25em;
   margin-block: 1em;
+}
+
+.message p {
+  font-size: 1.25em;
 }

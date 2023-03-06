@@ -1,16 +1,20 @@
 import classes from "./style.module.css";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { API_SIGNUP } from "./config";
-import axios from "axios";
 import classNames from "classnames";
 
 export default function Register() {
   const [error, setError] = useState("");
-
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
   function setErrorHandler(input) {
     setError(input);
     setTimeout(() => setError(""), 3000);
+  }
+  function setSuccessHandler(input) {
+    setSuccess(input);
+    setTimeout(() => setSuccess(""), 3000);
   }
 
   async function registerHandler() {
@@ -48,24 +52,19 @@ export default function Register() {
       passwordConfirm: confirmPassword,
     };
 
-    try {
-      const res = await fetch(API_SIGNUP, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!res.ok) throw new Error("");
-
-      const dataJSON = await res.json();
-      console.log(dataJSON);
-    } catch (err) {
-      // const dataJSON = await res.json();
-      return setErrorHandler(err);
+    const res = await fetch(API_SIGNUP, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    // console.log(res);
+    if (!res.ok) {
+      const errorData = await res.json();
+      return setErrorHandler(errorData.message);
     }
-    // Redirect to Login
+    setSuccessHandler("Account created successfully");
   }
 
   return (
@@ -113,7 +112,10 @@ export default function Register() {
             id="registerPhoto"
           />
         </div>
-        <div className={classes.error}>{error}</div>
+        <div className={classes.message}>
+          <p style={{ color: "red" }}>{error}</p>
+          <p style={{ color: "green" }}>{success}</p>
+        </div>
         <div className={classes.actions}>
           <button onClick={registerHandler}>Register</button>
           <p>

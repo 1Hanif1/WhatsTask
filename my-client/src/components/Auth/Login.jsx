@@ -1,9 +1,10 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import classes from "./style.module.css";
 import classNames from "classnames";
 import { API_LOGIN } from "./config";
 export default function Login() {
+  const navigate = useNavigate();
   const [error, setError] = useState("");
 
   function setErrorHandler(input) {
@@ -11,7 +12,7 @@ export default function Login() {
     setTimeout(() => setError(""), 3000);
   }
 
-  function loginHandler() {
+  async function loginHandler() {
     // Get Data
     const email = document.querySelector("#loginEmail").value;
     const password = document.querySelector("#loginPassword").value;
@@ -24,7 +25,24 @@ export default function Login() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return setErrorHandler("Please enter a valid email");
 
+    const data = {
+      email: "hanif@email.com",
+      password: "pass12345",
+    };
+
     // Call Database
+    const res = await fetch(API_LOGIN, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      return setErrorHandler(errorData.message);
+    }
     // Redirect to Login
   }
   return (
@@ -42,7 +60,9 @@ export default function Login() {
           required
         />
       </div>
-      <div className={classes.error}>{error}</div>
+      <div className={classes.message}>
+        <p style={{ color: "red" }}>{error}</p>
+      </div>
       <div className={classes.actions}>
         <button onClick={loginHandler}>Login</button>
         <p>

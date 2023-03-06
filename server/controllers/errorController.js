@@ -15,6 +15,9 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleInvalidLoginError = () =>
+  new AppError("Invalid Email or Password", 401);
+
 const handleJWTError = () =>
   new AppError("Invalid Token. Please login in again", 401);
 
@@ -50,16 +53,19 @@ const sendErrorProd = function (err, res) {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
   if (process.env.NODE_ENV.trim() === "development") {
     // console.log(err.name);
     let error = { ...err };
+
+    console.log(err.message);
 
     if (err.name === "CastError") error = handleCastErrorDB(err);
     if (err.name === "ValidationError") error = handleValidationErrorDB(err);
     if (err.code === 11000) error = handleDuplicateNameError(err);
     if (err.name === "JsonWebTokenError") error = handleJWTError();
     if (err.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (err?.message === "InvalidCredentials")
+      error = handleInvalidLoginError();
 
     sendErrorProd(error, res);
     // sendErrorDev(err, res);
