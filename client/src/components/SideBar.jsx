@@ -7,6 +7,7 @@ import deleteFile from "../assets/deleteFile.svg";
 import classNames from "classnames";
 
 function SideBar(props) {
+  const { classes } = props;
   const addSubtask = async () => {};
   return (
     <>
