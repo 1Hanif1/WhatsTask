@@ -1,0 +1,87 @@
+.form {
+  font-size: 1vw;
+}
+
+.form__input {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2em;
+}
+
+.form__input input {
+  width: 90%;
+  height: 2em;
+  font-size: 1.5em;
+  outline: none;
+  padding: 0.25em;
+  border: 0.2em solid #0b2545;
+}
+.form__input input:focus {
+  border-color: #034fad;
+}
+
+.form__error {
+  color: red;
+  text-align: center;
+  font-size: 1em;
+  margin-bottom: 1em;
+}
+
+.upload__btn {
+  background-color: #0b2545;
+  width: 50%;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.actions button {
+  background-color: #0b2545;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1.5em;
+  padding: 0.5em 1em;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  border: none;
+}
+
+.actions p {
+  display: flex;
+  font-size: 1.25em;
+}
+
+.actions p > a {
+  text-decoration: none;
+  color: #034fad;
+  font-weight: 400;
+  cursor: pointer;
+  border: none;
+  margin-left: 0.25em;
+}
+
+.actions button:hover {
+  background-color: #0b2545;
+}
+
+.actions a:hover {
+  text-decoration: underline;
+}
+
+.message {
+  font-size: 1.25em;
+  text-align: center;
+  height: 1.25em;
+  margin-block: 1em;
+}
+
+.message p {
+  font-size: 1.25em;
+}

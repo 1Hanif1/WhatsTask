@@ -5,9 +5,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateNameError = (err) => {
-  const message = ` ${
-    err.message.match(/".*?"/g)[0]
-  } already exists. Please enter a valid new name`;
+  const message = `Email or phone number already exists.`;
   return new AppError(message, 400);
 };
 
@@ -16,6 +14,9 @@ const handleValidationErrorDB = (err) => {
   const message = `Invalid Input: ${errors.join(". ")}`;
   return new AppError(message, 400);
 };
+
+const handleInvalidLoginError = () =>
+  new AppError("Invalid Email or Password", 401);
 
 const handleJWTError = () =>
   new AppError("Invalid Token. Please login in again", 401);
@@ -52,10 +53,22 @@ const sendErrorProd = function (err, res) {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
   if (process.env.NODE_ENV.trim() === "development") {
     // console.log(err.name);
-    sendErrorDev(err, res);
+    let error = { ...err };
+
+    console.log(err.message);
+
+    if (err.name === "CastError") error = handleCastErrorDB(err);
+    if (err.name === "ValidationError") error = handleValidationErrorDB(err);
+    if (err.code === 11000) error = handleDuplicateNameError(err);
+    if (err.name === "JsonWebTokenError") error = handleJWTError();
+    if (err.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (err?.message === "InvalidCredentials")
+      error = handleInvalidLoginError();
+
+    sendErrorProd(error, res);
+    // sendErrorDev(err, res);
   } else if (process.env.NODE_ENV.trim() === "production") {
     let error = { ...err };
 

@@ -1,0 +1,59 @@
+.main {
+  font-size: 1vw;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  min-height: 100vh;
+  position: relative;
+}
+
+.left {
+  background: url(../assets/pattern.jpg) center #0b2545;
+  /* background-size: cover; */
+  background-size: 10em;
+}
+
+.right {
+  font-size: 2vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+}
+
+.right h1 {
+  text-align: center;
+  color: #0b2545;
+  margin-bottom: 1em;
+}
+
+.right p {
+  font-size: 0.5em;
+  text-align: center;
+  margin-top: 1em;
+}
+.right p > a {
+  color: blue;
+  text-decoration: underline;
+}
+
+.hide {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .left {
+    position: absolute;
+    height: 100%;
+    width: 30vw;
+  }
+
+  .right {
+    position: absolute;
+    left: 5rem;
+  }
+  .form {
+    padding: 8rem;
+    font-size: 0.8rem;
+  }
+}

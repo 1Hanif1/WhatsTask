@@ -8,16 +8,7 @@ import downloadFile from "../assets/downloadFile.svg";
 import deleteFile from "../assets/deleteFile.svg";
 import classNames from "classnames";
 function SideBar(props) {
-  const [showModal, setShowModal] = useState(false);
-
-  const handleModalOpen = () => {
-    setShowModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
+  const addSubtask = async () => {};
   return (
     <>
       <div className={classes.activetask}>

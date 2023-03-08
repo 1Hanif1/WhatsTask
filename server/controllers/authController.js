@@ -32,15 +32,19 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    phoneNumber: req.body.phoneNumber,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    userPhoto: req.body.userPhoto,
-  });
-  createSendToken(newUser, 201, res);
+  try {
+    const newUser = await User.create({
+      name: req.body.name,
+      phoneNumber: req.body.phoneNumber,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      userPhoto: req.body.userPhoto,
+    });
+    createSendToken(newUser, 201, res);
+  } catch (err) {
+    next(err);
+  }
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -50,7 +54,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   const user = await User.findOne({ email }).select("+password");
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Invalid credentials", 401));
+    throw new AppError("InvalidCredentials", 401);
   }
   // console.log(user);
   // Load User Dashboard Data
