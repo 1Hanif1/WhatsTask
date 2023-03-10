@@ -1,6 +1,7 @@
 import checkmark from "./images/checkmark.svg";
 export default function TodoList(props) {
-  const { classes } = props;
+  const { classes, setModalState, setModalForm } = props;
+
   return (
     <div className={classes.todolist}>
       <div className={classes.todolist__active}>
