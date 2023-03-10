@@ -26,7 +26,7 @@ export default function Login() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return setErrorHandler("Please enter a valid email");
 
-    const data = {
+    const userData = {
       email,
       password,
     };
@@ -37,7 +37,7 @@ export default function Login() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(userData),
     });
 
     if (!res.ok) {
@@ -45,14 +45,15 @@ export default function Login() {
       return setErrorHandler(errorData.message);
     }
     // Redirect to Login
-    const { token } = await res.json();
+    const { token, data } = await res.json();
     if (!token) {
       return setErrorHandler(
         "There was some internal error. Please try again later"
       );
     }
-
+    console.log(data);
     localStorage.setItem("jwt", token);
+    localStorage.setItem("username", data.user.name);
     navigate("/dashboard");
     // console.log(navigate);
   }

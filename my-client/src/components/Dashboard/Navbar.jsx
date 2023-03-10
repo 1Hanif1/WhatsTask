@@ -5,9 +5,14 @@ import todaysTask from "./images/todaystask.png";
 import caret from "./images/caret.svg";
 import MyTaskListForm from "./Forms/MyTaskListForm";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 export default function Navbar(props) {
   const { classes, setModalState, setModalForm } = props;
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {});
+
   const toggleDropDown = function (e) {
     if (e.target.nodeName == "IMG") return;
     const dropDown = e.target.nextElementSibling;
@@ -26,13 +31,16 @@ export default function Navbar(props) {
     localStorage.removeItem("jwt");
     navigate("/");
   };
+
   return (
     <nav className={classes.navbar}>
       <div className={classes.user}>
         <figure className={classes["user__image"]}>
           <img src={profilePic} alt="/" />
         </figure>
-        <p className={classes["user__name"]}>Thisis Myname</p>
+        <p className={classes["user__name"]}>
+          {localStorage.getItem("username")}
+        </p>
       </div>
       <div className={classes["navbar__buttons"]}>
         <div className={classes.buttons}>
