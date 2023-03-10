@@ -7,7 +7,8 @@ import Modal from "../components/Dashboard/Modal";
 
 export default function Dashboard() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalForm, setModalForm] = useState(<p></p>);
+  const [modalForm, setModalForm] = useState();
+
   return (
     <main className={classes.main}>
       <Modal
