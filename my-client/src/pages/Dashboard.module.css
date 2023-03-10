@@ -32,6 +32,23 @@ img {
   grid-template-columns: 1fr 3fr;
 }
 
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: hsl(0, 0%, 0%, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: white;
+  padding: 4em;
+  border-radius: 0.25em;
+}
+
 .navbar {
   background-color: #0b2545;
   font-size: 1vw;
@@ -419,6 +436,14 @@ img {
 }
 .attachment__button input {
   display: none;
+}
+
+.hide {
+  display: none;
+}
+
+.rotate {
+  transform: rotate(180deg);
 }
 
 /*# sourceMappingURL=style.css.map */
