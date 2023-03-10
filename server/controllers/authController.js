@@ -16,9 +16,10 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-    sameSite: "none",
-    secure: true,
+    httpOnly: true,
+    secure: false,
   };
+  console.log(cookieOptions);
   res.cookie("jwt", token, cookieOptions);
   user.password = undefined;
 
@@ -52,6 +53,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!email || !password) {
     return next(new AppError("Please provide email and password", 400));
   }
+
   const user = await User.findOne({ email }).select("+password");
   if (!user || !(await user.correctPassword(password, user.password))) {
     throw new AppError("InvalidCredentials", 401);
