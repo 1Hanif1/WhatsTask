@@ -3,6 +3,7 @@ import { useState } from "react";
 import classes from "./style.module.css";
 import classNames from "classnames";
 import { API_LOGIN } from "./config";
+
 export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -25,9 +26,9 @@ export default function Login() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return setErrorHandler("Please enter a valid email");
 
-    const data = {
-      email: "hanif@email.com",
-      password: "pass12345",
+    const userData = {
+      email,
+      password,
     };
 
     // Call Database
@@ -36,7 +37,7 @@ export default function Login() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(userData),
     });
 
     if (!res.ok) {
@@ -44,7 +45,19 @@ export default function Login() {
       return setErrorHandler(errorData.message);
     }
     // Redirect to Login
+    const { token, data } = await res.json();
+    if (!token) {
+      return setErrorHandler(
+        "There was some internal error. Please try again later"
+      );
+    }
+    console.log(data);
+    localStorage.setItem("jwt", token);
+    localStorage.setItem("username", data.user.name);
+    navigate("/dashboard");
+    // console.log(navigate);
   }
+
   return (
     <div className={classes.form}>
       <h1>Log In</h1>

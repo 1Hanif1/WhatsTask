@@ -4,14 +4,19 @@ import logout from "./images/logout.png";
 import todaysTask from "./images/todaystask.png";
 import caret from "./images/caret.svg";
 import MyTaskListForm from "./Forms/MyTaskListForm";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 export default function Navbar(props) {
   const { classes, setModalState, setModalForm } = props;
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {});
 
   const toggleDropDown = function (e) {
     if (e.target.nodeName == "IMG") return;
     const dropDown = e.target.nextElementSibling;
     const caret = e.target.querySelector("img");
-    console.log(caret);
     caret.classList.toggle(classes.rotate);
     dropDown.classList.toggle(classes.hide);
   };
@@ -21,24 +26,32 @@ export default function Navbar(props) {
     setModalForm(<MyTaskListForm classes={classes} />);
     setModalState(true);
   };
+
+  const logoutHandler = function () {
+    localStorage.removeItem("jwt");
+    navigate("/");
+  };
+
   return (
     <nav className={classes.navbar}>
       <div className={classes.user}>
         <figure className={classes["user__image"]}>
           <img src={profilePic} alt="/" />
         </figure>
-        <p className={classes["user__name"]}>Thisis Myname</p>
+        <p className={classes["user__name"]}>
+          {localStorage.getItem("username")}
+        </p>
       </div>
       <div className={classes["navbar__buttons"]}>
         <div className={classes.buttons}>
-          <a href="#">
+          <div>
             <img src={settings} alt="" /> Settings
-          </a>
+          </div>
         </div>
         <div className={classes.buttons}>
-          <a href="#">
+          <div onClick={logoutHandler}>
             <img src={logout} alt="" /> Logout
-          </a>
+          </div>
         </div>
         <div className={classes.todaytask}>
           <img src={todaysTask} alt="" /> Today's Task
