@@ -11,7 +11,6 @@ export default function Navbar(props) {
   const { classes, setModalState, setModalForm } = props;
   const navigate = useNavigate();
   const location = useLocation();
-  useEffect(() => {});
 
   const toggleDropDown = function (e) {
     if (e.target.nodeName == "IMG") return;
@@ -29,6 +28,7 @@ export default function Navbar(props) {
 
   const logoutHandler = function () {
     localStorage.removeItem("jwt");
+    localStorage.removeItem("username");
     navigate("/");
   };
 

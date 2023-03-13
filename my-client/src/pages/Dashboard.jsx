@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Dashboard/Navbar";
 import ActiveTask from "../components/Dashboard/ActiveTask";
 import TodoList from "../components/Dashboard/TodoList";
@@ -9,10 +9,23 @@ import { AppContext } from "../AppContext";
 export default function Dashboard() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalForm, setModalForm] = useState();
+  const [data, setData] = useState({});
 
   // this will be set first using a useEffect hook
-  useEffect(() => {});
-  const [data, setData] = useState({});
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/api/user", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data.data);
+        console.log(data.data);
+      })
+      .catch((err) => console.log(err));
+  }, [localStorage.getItem("jwt")]);
 
   return (
     <AppContext.Provider value={{ data, setData }}>
