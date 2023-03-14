@@ -1,5 +1,7 @@
-const accountSid = "ACd007e0ad44d6e7f879f9b568d9544ee0";
-const authToken = "3e0caf2f3409bf674171beefb8ada2ba";
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(accountSid, authToken);
 const moment = require("moment");
 client.messages
@@ -18,7 +20,7 @@ client.messages
 //   .then((message) => console.log(message.sid));
 // Query the database or task manager for pending or in-progress tasks
 const getTasks = () => {
-  // Your implementation here
+  // FETCH TASKS
 };
 
 // Send a WhatsApp message for each task that has a deadline that has passed
@@ -27,7 +29,7 @@ const sendReminders = (tasks) => {
 
   tasks.forEach((task) => {
     const { id, user, deadline, details } = task;
-    const to = `whatsapp:${user.phoneNumber}`;
+    const to = `whatsapp:${user.phoneNumber}`; // phone number of the user
 
     if (moment().isAfter(deadline)) {
       client.messages
