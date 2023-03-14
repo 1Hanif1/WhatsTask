@@ -1,20 +1,20 @@
 import "../index.css";
+import AddSubtask from "./AddSubtask";
 import { Form } from "react-router-dom";
+import { useState } from "react";
 import classes from "./DashboardComponent.module.css";
 import checkmark from "../assets/checkmark.svg";
 import downloadFile from "../assets/downloadFile.svg";
 import deleteFile from "../assets/deleteFile.svg";
 import classNames from "classnames";
-
 function SideBar(props) {
-  const { classes } = props;
   const addSubtask = async () => {};
   return (
     <>
       <div className={classes.activetask}>
         <Form method="PATCH" className={classes.form}>
           <p className={classes.activetask__title}>{props.selectedTask}</p>
-          {props.userData.data.personalTaskList[0].tasks.map((task) => {
+          {props.taskDetails.map((task) => {
             if (task._id === props.selectedTaskId) {
               return (
                 <>
@@ -67,9 +67,13 @@ function SideBar(props) {
                         })}
                       </div>
                       <div className={classes["subtask__button"]}>
-                        <button className={classes.button}>
+                        <button
+                          className={classes.button}
+                          onClick={handleModalOpen}
+                        >
                           Add new subtask+
                         </button>
+                        {showModal && <AddSubtask />}
                       </div>
                     </div>
                   </div>
