@@ -358,6 +358,16 @@ img {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.activetask__update .error {
+  color: white;
+  font-size: 1.25em;
+  margin-bottom: 0.5em;
 }
 
 .activetask__update button {
