@@ -5,13 +5,13 @@ import todaysTask from "./images/todaystask.png";
 import caret from "./images/caret.svg";
 import MyTaskListForm from "./Forms/MyTaskListForm";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { AppContext } from "../../AppContext";
 export default function Navbar(props) {
-  const { classes, setModalState, setModalForm } = props;
+  const { classes, setModalState, setModalForm, renderTodoList } = props;
   const navigate = useNavigate();
-  const location = useLocation();
-  useEffect(() => {});
+  const { data, setData } = useContext(AppContext);
 
   const toggleDropDown = function (e) {
     if (e.target.nodeName == "IMG") return;
@@ -29,7 +29,17 @@ export default function Navbar(props) {
 
   const logoutHandler = function () {
     localStorage.removeItem("jwt");
+    localStorage.removeItem("username");
     navigate("/");
+  };
+
+  const loadListData = function (e) {
+    const id = e.target.dataset.id;
+    data.personalTaskList.forEach((list) => {
+      if (list._id == id) {
+        renderTodoList(list);
+      }
+    });
   };
 
   return (
@@ -65,6 +75,18 @@ export default function Navbar(props) {
           </p>
           <div className={classes["mytask__list"]}>
             {/* <p className={classes.list}>List 1</p> */}
+            {data.personalTaskList?.map((list) => {
+              return (
+                <p
+                  className={classes.list}
+                  key={list._id}
+                  data-id={list._id}
+                  onClick={loadListData}
+                >
+                  {list.name}
+                </p>
+              );
+            })}
             <div className={classes.buttonwrapper}>
               <button className={classes.addList} onClick={openModal}>
                 Add New List+
@@ -77,7 +99,8 @@ export default function Navbar(props) {
             Workspace 1 <img src={caret} alt="" />
           </div>
           <div className={classes["workspace__list"]}>
-            <p className={classes.list}>List 1</p>
+            {/* <p className={classes.list}>List 1</p> */}
+
             <div className={classes.buttonwrapper}>
               <button className={classes.addList}>Add New List+</button>
             </div>
