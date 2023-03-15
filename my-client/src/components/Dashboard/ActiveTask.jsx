@@ -1,20 +1,20 @@
+import { useState, useContext } from "react";
+import { AppContext } from "../../AppContext";
 import checkmark from "./images/checkmark.svg";
 import downloadFile from "./images/downloadFile.svg";
 import deleteFile from "./images/deleteFile.svg";
-import { useState, useContext } from "react";
-import { AppContext } from "../../AppContext";
+
 export default function ActiveTask(props) {
-  const { classes, task, listId, updateList } = props;
+  const { classes, task, listId, updateList, taskId } = props;
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
   const [error, setError] = useState("");
-  const { data, setData } = useContext(AppContext);
-  // useEffect(() => console.log(task), [task]);
 
   const subtaskHandler = function (e) {
     const subtaskElement = e.target;
     const id = subtaskElement.dataset.id;
     const subtask = task.subtasks.find((sub) => sub._id == id);
+
     if (subtaskElement.classList.contains(classes.completed)) {
       subtaskElement.classList.remove(classes.completed);
       subtask.status = "incomplete";
@@ -28,7 +28,6 @@ export default function ActiveTask(props) {
     const status = e.target.value;
     setStatus(status);
     task.status = status;
-    // console.log(task);
   };
 
   const deadlineHandler = function (e) {
@@ -37,31 +36,34 @@ export default function ActiveTask(props) {
     task.deadline = deadline;
   };
 
-  const jwt = localStorage.getItem("jwt");
-
   const submitChanges = async function () {
     try {
-      // Update the context
       const updatedTask = {
-        taskId: task._id,
+        taskId,
         data: task,
       };
+      // console.log(updatedTask);
+
       // Call API to update data at backend
+      const jwt = localStorage.getItem("jwt");
       let res = await fetch(
         `http://127.0.0.1:3000/api/user/task/list/${listId}`,
         {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${jwt}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(updatedTask),
         }
       );
 
       res = await res.json();
-      console.log(res);
+      updateList(updatedTask);
     } catch (err) {
       console.log(err);
+      setError("There was an error");
+      setTimeout(setError(""), 3000);
     }
   };
 

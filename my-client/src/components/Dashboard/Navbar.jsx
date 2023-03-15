@@ -5,13 +5,16 @@ import todaysTask from "./images/todaystask.png";
 import caret from "./images/caret.svg";
 import MyTaskListForm from "./Forms/MyTaskListForm";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 export default function Navbar(props) {
   const { classes, setModalState, setModalForm, renderTodoList } = props;
   const navigate = useNavigate();
   const { data, setData } = useContext(AppContext);
+
+  const [userData, setUserData] = useState(data);
+  useEffect(() => setUserData(data), [data]);
 
   const toggleDropDown = function (e) {
     if (e.target.nodeName == "IMG") return;
@@ -35,7 +38,7 @@ export default function Navbar(props) {
 
   const loadListData = function (e) {
     const id = e.target.dataset.id;
-    data.personalTaskList.forEach((list) => {
+    userData.personalTaskList.forEach((list) => {
       if (list._id == id) {
         renderTodoList(list);
       }
@@ -75,7 +78,7 @@ export default function Navbar(props) {
           </p>
           <div className={classes["mytask__list"]}>
             {/* <p className={classes.list}>List 1</p> */}
-            {data.personalTaskList?.map((list) => {
+            {userData.personalTaskList?.map((list) => {
               return (
                 <p
                   className={classes.list}

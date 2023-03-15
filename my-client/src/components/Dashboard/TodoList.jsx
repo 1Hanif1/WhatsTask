@@ -1,35 +1,69 @@
 import checkmark from "./images/checkmark.svg";
 import ActiveTask from "./ActiveTask";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AppContext } from "../../AppContext";
 export default function TodoList(props) {
-  const { classes, setModalState, setModalForm, data, updateData } = props;
+  const { classes, setModalState, setModalForm, listData, updateData, listId } =
+    props;
   const [selectedTask, setSelectedTask] = useState(null);
-  const [currentListId, setCurrentListId] = useState(null);
+  const [currentTaskId, setCurrentTaskId] = useState(null);
+  const { data, setData } = useContext(AppContext);
 
   const setActiveTaskHandler = function (e) {
     const id = e.target.dataset.id;
-    setCurrentListId(id);
-    data.forEach((task) => {
+    listData.forEach((task) => {
       if (task._id == id) {
         setSelectedTask(task);
-        // console.log(selectedTask);
+        setCurrentTaskId(task._id);
       }
     });
   };
 
+  // const updateList = function (updateTask) {
+  //   const updatedListData = listData.map((task) => {
+  //     if (task._id === currentTaskId) {
+  //       return updateTask.data;
+  //     } else {
+  //       return task;
+  //     }
+  //   });
+  //   updateData(updatedListData);
+  // };
   const updateList = function (updateTask) {
-    data.forEach(task, (index) => {
-      if (task._id == currentListId) {
-        data[index] = task;
-        updateData(data);
+    listData.forEach((task, index) => {
+      if (task._id == currentTaskId) {
+        listData[index] = updateTask.data;
       }
     });
+    updateData({ data: listData, id: listId, type: "personalTaskList" });
   };
+
+  const handleNewTask = function (e) {
+    if (e.key !== "Enter") return;
+    if (!listId) return;
+    const value = e.target.value.trim();
+    if (!value) return;
+    const newTask = { name: value };
+    fetch(`http://127.0.0.1:3000/api/user/task/list/${listId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newTask),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        updateData({ data, type: "newTask", id: listId });
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <>
       <div className={classes.todolist}>
         <div className={classes.todolist__active}>
-          {data
+          {listData
             .filter((task) => task.status == "incomplete")
             .map((task) => {
               return (
@@ -49,7 +83,7 @@ export default function TodoList(props) {
         </div>
         <p className={classes.todolist__subtitle}>Completed Tasks</p>
         <div className={classes.todolist__completed}>
-          {data
+          {listData
             .filter((task) => task.status == "complete")
             .map((task) => {
               return (
@@ -68,13 +102,18 @@ export default function TodoList(props) {
             })}
         </div>
         <div className={classes.todolist__input}>
-          <input type="text" placeholder="Add a new task" />
+          <input
+            type="text"
+            placeholder="Add a new task"
+            onKeyDown={handleNewTask}
+          />
         </div>
       </div>
       <ActiveTask
         classes={classes}
         task={selectedTask}
-        listId={currentListId}
+        listId={listId}
+        taskId={currentTaskId}
         updateList={updateList}
       />
     </>

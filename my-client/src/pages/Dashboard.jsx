@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [modalForm, setModalForm] = useState();
   const [data, setData] = useState({});
   const [todoListData, setTodoListData] = useState({
+    id: "",
     name: "No List Selected",
     tasks: [],
   });
@@ -34,13 +35,49 @@ export default function Dashboard() {
 
   const renderTodoList = function (list) {
     setTodoListData({
+      id: list._id,
       name: list.name,
       tasks: list.tasks,
     });
   };
 
-  const updateData = function (data) {
-    setData(data);
+  // const updateData = function (newData) {
+  //   // setData(data);
+  //   if (newData.type == "personalTaskList") {
+  //     data.personalTaskList.forEach((list, index) => {
+  //       if (list._id == newData.id) {
+  //         data.personalTaskList[index].tasks = list.tasks;
+  //         setData(data);
+  //       }
+  //     });
+  //   }
+  // };
+
+  const updateData = function (newData) {
+    setData((prevData) => {
+      const newDataCopy = { ...prevData }; // create a copy of the data object
+      if (newData.type == "personalTaskList") {
+        newDataCopy.personalTaskList.forEach((list, index) => {
+          if (list._id == newData.id) {
+            newDataCopy.personalTaskList[index].tasks = list.tasks;
+          }
+        });
+      } else if (newData.type == "newTask") {
+        newDataCopy.personalTaskList = newData.data.data;
+        newDataCopy.personalTaskList.forEach((list, index) => {
+          if (list._id == newData.id) {
+            setTodoListData((_) => {
+              return {
+                id: list._id,
+                name: list.name,
+                tasks: list.tasks,
+              };
+            });
+          }
+        });
+      }
+      return newDataCopy; // return the updated copy as the new state
+    });
   };
 
   return (
@@ -72,8 +109,10 @@ export default function Dashboard() {
             classes={classes}
             setModalState={setModalIsOpen}
             setModalForm={setModalForm}
-            data={todoListData.tasks}
+            listData={todoListData.tasks}
             updateData={updateData}
+            listId={todoListData.id}
+            data={data}
           />
           {/* Will need data from TodoList: Create a global handler */}
         </section>
