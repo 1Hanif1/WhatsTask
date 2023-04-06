@@ -1,4 +1,5 @@
 import checkmark from "./images/checkmark.svg";
+import DeleteFile from "./images/deleteFile.svg";
 import ActiveTask from "./ActiveTask";
 import { useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
@@ -59,6 +60,29 @@ export default function TodoList(props) {
       .catch((err) => console.log(err));
   };
 
+  const deleteTask = async function (e) {
+    const task = e.target.closest(`div`);
+    const taskId = task.dataset.id;
+    console.log(taskId);
+    const res = await fetch(
+      `http://127.0.0.1:3000/api/user/task/list/${listId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ taskId }),
+      }
+    );
+
+    if (!res.ok) return;
+
+    const resData = await res.json();
+
+    updateData({ data: resData.data, type: "deleteTask" });
+  };
+
   return (
     <>
       <div className={classes.todolist}>
@@ -76,7 +100,16 @@ export default function TodoList(props) {
                   <div className={classes.checkmark}>
                     <img src={checkmark} alt="" />
                   </div>
-                  {task.name}
+                  {task.name}{" "}
+                  <img
+                    src={DeleteFile}
+                    style={{
+                      width: "1.25em",
+                      marginLeft: "auto",
+                      cursor: "pointer",
+                    }}
+                    onClick={deleteTask}
+                  />
                 </div>
               );
             })}
@@ -96,7 +129,16 @@ export default function TodoList(props) {
                   <div className={classes.checkmark}>
                     <img src={checkmark} alt="" />
                   </div>
-                  {task.name}
+                  {task.name}{" "}
+                  <img
+                    src={DeleteFile}
+                    style={{
+                      width: "1.25em",
+                      marginLeft: "auto",
+                      cursor: "pointer",
+                    }}
+                    onClick={deleteTask}
+                  />
                 </div>
               );
             })}

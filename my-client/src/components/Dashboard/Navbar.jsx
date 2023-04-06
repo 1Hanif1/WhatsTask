@@ -3,6 +3,7 @@ import settings from "./images/settings.png";
 import logout from "./images/logout.png";
 import todaysTask from "./images/todaystask.png";
 import caret from "./images/caret.svg";
+import DeleteFile from "./images/deleteFile.svg";
 import MyTaskListForm from "./Forms/MyTaskListForm";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
@@ -43,6 +44,39 @@ export default function Navbar(props) {
         renderTodoList(list);
       }
     });
+  };
+
+  const deleteList = async function (e) {
+    const list = e.target.closest("p");
+    const listId = list.dataset.id;
+
+    // Call API to delete the List
+    try {
+      let res = await fetch(`http://127.0.0.1:3000/api/user/task/list`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ listId }),
+      });
+
+      if (!res.ok) return;
+
+      // res = await fetch("http://127.0.0.1:3000/api/user", {
+      //   method: "GET",
+      //   headers: {
+      //     Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      //   },
+      // });
+
+      // const resData = await res.json();
+      // setData(resData);
+      list.remove();
+    } catch (err) {
+      console.log(err);
+    }
+    // Update context
   };
 
   return (
@@ -87,6 +121,11 @@ export default function Navbar(props) {
                   onClick={loadListData}
                 >
                   {list.name}
+                  <img
+                    src={DeleteFile}
+                    style={{ width: "1.25em" }}
+                    onClick={deleteList}
+                  />
                 </p>
               );
             })}

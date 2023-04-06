@@ -55,7 +55,7 @@ export default function Dashboard() {
 
   const updateData = function (newData) {
     setData((prevData) => {
-      const newDataCopy = { ...prevData }; // create a copy of the data object
+      let newDataCopy = { ...prevData }; // create a copy of the data object
       if (newData.type == "personalTaskList") {
         newDataCopy.personalTaskList.forEach((list, index) => {
           if (list._id == newData.id) {
@@ -75,6 +75,8 @@ export default function Dashboard() {
             });
           }
         });
+      } else if (newData.type == "deleteTask") {
+        newDataCopy = newData.data;
       }
       return newDataCopy; // return the updated copy as the new state
     });
