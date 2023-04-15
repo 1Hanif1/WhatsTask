@@ -1,9 +1,9 @@
 import checkmark from "./images/checkmark.svg";
 import DeleteFile from "./images/deleteFile.svg";
-import ActiveTask from "./ActiveTask";
+import WorkspaceActiveTask from "./WorkspaceActiveTask";
 import { useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
-export default function TodoList(props) {
+export default function WorkspaceList(props) {
   const { classes, setModalState, setModalForm, listData, updateData, listId } =
     props;
   const [selectedTask, setSelectedTask] = useState(null);
@@ -45,7 +45,7 @@ export default function TodoList(props) {
     const value = e.target.value.trim();
     if (!value) return;
     const newTask = { name: value };
-    fetch(`http://127.0.0.1:3000/api/user/task/list/${listId}`, {
+    fetch(`http://127.0.0.1:3000/api/user/workspace/${listId}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
@@ -62,10 +62,11 @@ export default function TodoList(props) {
 
   const deleteTask = async function (e) {
     const task = e.target.closest(`div`);
+    console.log(task);
     const taskId = task.dataset.id;
     console.log(taskId);
     const res = await fetch(
-      `http://127.0.0.1:3000/api/user/task/list/${listId}`,
+      `http://127.0.0.1:3000/api/user/workspace/${listId}`,
       {
         method: "DELETE",
         headers: {
@@ -78,10 +79,12 @@ export default function TodoList(props) {
 
     if (!res.ok) return;
 
+    task.style.display = "none";
+
     const resData = await res.json();
 
     updateData({ data: resData.data, type: "deleteTask" });
-    task.style.display = "none";
+
     setSelectedTask(null);
   };
 
@@ -153,7 +156,7 @@ export default function TodoList(props) {
           />
         </div>
       </div>
-      <ActiveTask
+      <WorkspaceActiveTask
         classes={classes}
         task={selectedTask}
         listId={listId}

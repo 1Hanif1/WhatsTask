@@ -27,9 +27,6 @@
 	"workspace": [
 		{
 			name: "WorkSpace 1",
-			allTaskLists: [
-				{
-					name: List1,
 					tasks: [
 						{
 							name: Create UI for Project,
@@ -45,16 +42,16 @@
 								"File Path of document 2"
 							],
 							status: "completed | Incompleted",
-							assignedMembers: [
-								``` Virtual Properties
-									{
-										uId: "Id of user from mongoDB",
-										name: "User's name" 
-									}
-								```
-							]
 						}
-					]
+					],
+          members: [
+            {
+              memberId: "Xyz",
+              memberName: "Abc",
+              memberNumber: "Phone",
+              memberEmail: "Email"
+            }
+          ]
 				}
 			]
 		}
@@ -66,6 +63,7 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const User = require("./User");
 
 const taskSubSchema = new mongoose.Schema({
   name: String,
@@ -80,6 +78,7 @@ const assignedMemberSubSchema = new mongoose.Schema({
   uId: String,
   name: String,
   phoneNumber: String,
+  email: String,
 });
 
 const personalTaskListSubSchema = new mongoose.Schema({
@@ -120,7 +119,19 @@ const workspaceTaskListSubSchema = new mongoose.Schema({
 
 const workspaceSubSchema = new mongoose.Schema({
   name: { type: String, default: "" },
-  allTaskList: [workspaceTaskListSubSchema],
+  tasks: {
+    type: [
+      {
+        name: { type: String, required: [true, "Task must have a name"] },
+        deadline: { type: Date, default: null },
+        subtasks: [taskSubSchema],
+        attachments: [attachmentSubSchema],
+        status: { type: String, default: "incomplete" },
+      },
+    ],
+    default: [],
+  },
+  members: [assignedMemberSubSchema],
 });
 
 const schema = new mongoose.Schema({
@@ -173,6 +184,46 @@ const schema = new mongoose.Schema({
   },
 });
 
+// Add a method to the workspace field to add a member to a specific workspace
+schema.methods.addMemberToWorkspace = async function (workspaceId, email) {
+  const workspace = this.workspace.find((w) => {
+    console.log(w._id);
+    return w._id.toString() == workspaceId;
+  });
+  if (!workspace) {
+    throw new Error("Workspace not found");
+  }
+
+  const existingMember = workspace.members.find(
+    (member) => member.email === email
+  );
+  if (existingMember) {
+    throw new Error("Member already exists in the workspace");
+  }
+
+  // Use a logic to check if the member exists, e.g. by querying the User model
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("Member not found");
+  }
+
+  // Add the member to the assignedMembers array
+  const newMember = {
+    uId: user.uId,
+    name: user.name,
+    phoneNumber: user.phoneNumber,
+    email: user.email,
+  };
+  workspace.members.push(newMember);
+
+  // Save the updated document
+  return this.save();
+};
+
 const Data = mongoose.model("Data", schema);
 
 module.exports = Data;
+
+// const Data = mongoose.model("Data", schema);
+
+// module.exports = Data;

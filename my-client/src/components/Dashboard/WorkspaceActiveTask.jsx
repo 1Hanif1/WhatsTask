@@ -48,7 +48,7 @@ export default function ActiveTask(props) {
       // Call API to update data at backend
       const jwt = localStorage.getItem("jwt");
       let res = await fetch(
-        `http://127.0.0.1:3000/api/user/task/list/${listId}`,
+        `http://127.0.0.1:3000/api/user/workspace/${listId}`,
         {
           method: "PATCH",
           headers: {

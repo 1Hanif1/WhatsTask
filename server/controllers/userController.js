@@ -263,11 +263,209 @@ exports.updateTask = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// Get all workspace
+exports.getWorkspace = catchAsyncError(async (req, res, next) => {
+  const data = await Data.findOne({ uId: req.user._id });
+
+  if (!data) {
+    throw new AppError("No data found", 404);
+  }
+
+  const { workspace } = data;
+
+  res.status(200).json({
+    status: "success",
+    data: workspace,
+  });
+});
+
 // Create a new workspace
-exports.createWorkspace = catchAsyncError(async (req, res, next) => {});
+exports.createWorkspace = catchAsyncError(async (req, res, next) => {
+  const data = await Data.findOne({ uId: req.user._id });
+
+  if (!data) {
+    throw new AppError("No data found", 404);
+  }
+
+  data.workspace.push(req.body);
+  await data.validate();
+  await data.save();
+  res.status(200).json({
+    status: "Success",
+    data,
+  });
+});
 
 // Add new task to a workspace
-exports.addWorkspaceTask = catchAsyncError(async (req, res, next) => {});
+exports.addWorkspaceTask = catchAsyncError(async (req, res, next) => {
+  const data = await Data.findOneAndUpdate(
+    {
+      uId: req.user._id,
+      "workspace._id": req.params.id,
+    },
+    {
+      $push: {
+        "workspace.$.tasks": req.body,
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!data)
+    throw new AppError(`No Workspace with ID: ${req.params.id} found`, 404);
+
+  res.status(200).json({
+    status: "Success",
+    data: data.workspace,
+  });
+});
 
 // Add a member to the workspace
-exports.addWorkspaceMember = catchAsyncError(async (req, res, next) => {});
+``;
+exports.addWorkspaceMember = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params; // Extract the workspaceId from the request parameters
+  const { email } = req.body; // Extract the email of the member to be added from the request body
+
+  // Find the Data document by workspaceId
+  const data = await Data.findOne({ uId: req.user._id });
+
+  if (!data) {
+    return res.status(404).json({ error: "Sender not found" });
+  }
+
+  // If data not found, return an error
+  if (!data) {
+    return res.status(404).json({ error: "Workspace not found" });
+  }
+
+  try {
+    // Call the addMemberToWorkspace method to add the member to the workspace
+    await data.addMemberToWorkspace(id, email);
+
+    // If member successfully added, return a success response
+    return res
+      .status(200)
+      .json({ message: "Member added to workspace successfully", data });
+  } catch (error) {
+    // If an error occurs, return an error response
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete a Workspace
+exports.deleteWorkspace = catchAsyncError(async (req, res, next) => {
+  // Find the user's data by uId
+  const data = await Data.findOne({ uId: req.user._id });
+
+  // Check if data exists
+  if (!data) {
+    throw new AppError(`No data found for user with ID: ${req.user._id}`, 404);
+  }
+
+  // Find the index of the workspace to be deleted
+  const workspaceIndex = data.workspace.findIndex((workspace) =>
+    workspace._id.equals(req.body.id)
+  );
+
+  // Check if workspace exists
+  if (workspaceIndex === -1) {
+    throw new AppError(`No workspace found with ID: ${req.body.id}`, 404);
+  }
+
+  // Remove the workspace from the array
+  data.workspace.splice(workspaceIndex, 1);
+
+  // Save the updated data
+  await data.save();
+
+  res.status(204).json({
+    status: "Success",
+    message: `Workspace with ID: ${req.body.id} deleted successfully`,
+  });
+});
+
+// Update a task on workspace
+exports.updateWorkspaceTask = catchAsyncError(async (req, res, next) => {
+  // Find the user's data by uId
+  const data = await Data.findOne({ uId: req.user._id });
+
+  // Check if data exists
+  if (!data) {
+    throw new AppError(`No data found for user with ID: ${req.user._id}`, 404);
+  }
+
+  // Find the index of the workspace to be updated
+  const workspaceIndex = data.workspace.findIndex((workspace) =>
+    workspace._id.equals(req.params.id)
+  );
+
+  // Check if workspace exists
+  if (workspaceIndex === -1) {
+    throw new AppError(`No workspace found with ID: ${req.params.id}`, 404);
+  }
+
+  // Find the index of the task to be updated
+  const taskIndex = data.workspace[workspaceIndex].tasks.findIndex((task) =>
+    task._id.equals(req.body.taskId)
+  );
+
+  // Check if task exists
+  if (taskIndex === -1) {
+    throw new AppError(`No task found with ID: ${req.params.taskId}`, 404);
+  }
+
+  // Update the task with the new data
+  data.workspace[workspaceIndex].tasks[taskIndex] = req.body.data;
+
+  // Save the updated data
+  await data.save();
+
+  res.status(200).json({
+    status: "Success",
+    data: data.workspace[workspaceIndex].tasks[taskIndex],
+  });
+});
+
+exports.deleteWorkspaceTask = catchAsyncError(async (req, res, next) => {
+  // Find the user's data by uId
+  const data = await Data.findOne({ uId: req.user._id });
+
+  // Check if data exists
+  if (!data) {
+    throw new AppError(`No data found for user with ID: ${req.user._id}`, 404);
+  }
+
+  // Find the index of the workspace to be updated
+  const workspaceIndex = data.workspace.findIndex((workspace) =>
+    workspace._id.equals(req.params.id)
+  );
+
+  // Check if workspace exists
+  if (workspaceIndex === -1) {
+    throw new AppError(`No workspace found with ID: ${req.params.id}`, 404);
+  }
+
+  // Find the index of the task to be deleted
+  const taskIndex = data.workspace[workspaceIndex].tasks.findIndex((task) =>
+    task._id.equals(req.body.taskId)
+  );
+
+  // Check if task exists
+  if (taskIndex === -1) {
+    throw new AppError(`No task found with ID: ${req.body.taskId}`, 404);
+  }
+
+  // Remove the task from the tasks array
+  data.workspace[workspaceIndex].tasks.splice(taskIndex, 1);
+
+  // Save the updated data
+  await data.save();
+
+  res.status(204).json({
+    status: "Success",
+    data: null,
+  });
+});

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Dashboard/Navbar";
 import ActiveTask from "../components/Dashboard/ActiveTask";
 import TodoList from "../components/Dashboard/TodoList";
+import WorkspaceList from "../components/Dashboard/WorkspaceList";
+import AddMemberForm from "../components/Dashboard/Forms/AddMemberForm";
 import classes from "./Dashboard.module.css";
 import Modal from "../components/Dashboard/Modal";
 import { AppContext } from "../AppContext";
@@ -9,6 +11,7 @@ import { AppContext } from "../AppContext";
 export default function Dashboard() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalForm, setModalForm] = useState();
+  const [listType, setListType] = useState();
   const [data, setData] = useState({});
   const [todoListData, setTodoListData] = useState({
     id: "",
@@ -38,6 +41,7 @@ export default function Dashboard() {
       id: list._id,
       name: list.name,
       tasks: list.tasks,
+      members: list.members ? list.members : null,
     });
   };
 
@@ -52,6 +56,24 @@ export default function Dashboard() {
   //     });
   //   }
   // };
+
+  const renderMemberList = (listType) => {
+    if (listType == "workspace") {
+      return (
+        <>
+          <p>
+            {!todoListData.members
+              ? "No members added"
+              : todoListData.members.reduce(
+                  (acc, el) => (acc = acc + el.name + ", "),
+                  ""
+                )}
+          </p>
+          <button onClick={openMemberModal}>Add Member+</button>
+        </>
+      );
+    } else return "";
+  };
 
   const updateData = function (newData) {
     setData((prevData) => {
@@ -82,6 +104,76 @@ export default function Dashboard() {
     });
   };
 
+  const updateWorkspaceData = function (newData) {
+    console.log(newData);
+    setData((prevData) => {
+      let newDataCopy = { ...prevData }; // create a copy of the data object
+      if (newData.type == "personalTaskList") {
+        newDataCopy.workspace.forEach((list, index) => {
+          if (list._id == newData.id) {
+            newDataCopy.workspace[index].tasks = list.tasks;
+          }
+        });
+      } else if (newData.type == "newTask") {
+        newDataCopy.workspace = newData.data.data;
+        newDataCopy.workspace.forEach((list, index) => {
+          if (list._id == newData.id) {
+            setTodoListData((_) => {
+              return {
+                id: list._id,
+                name: list.name,
+                tasks: list.tasks,
+              };
+            });
+          }
+        });
+      } else if (newData.type == "deleteTask") {
+        newDataCopy = newData.data;
+      }
+      return newDataCopy; // return the updated copy as the new state
+
+      return prevData;
+    });
+  };
+
+  const renderListByType = (listType) => {
+    if (listType == "workspace")
+      return (
+        <WorkspaceList
+          classes={classes}
+          setModalState={setModalIsOpen}
+          setModalForm={setModalForm}
+          listData={todoListData.tasks}
+          updateData={updateWorkspaceData}
+          listId={todoListData.id}
+          data={data}
+        />
+      );
+    else
+      return (
+        <TodoList
+          classes={classes}
+          setModalState={setModalIsOpen}
+          setModalForm={setModalForm}
+          listData={todoListData.tasks}
+          updateData={updateData}
+          listId={todoListData.id}
+          data={data}
+        />
+      );
+  };
+
+  const openMemberModal = function () {
+    setModalForm(
+      <AddMemberForm
+        classes={classes}
+        workspaceId={todoListData.id}
+        updateData={setData}
+      />
+    );
+    setModalIsOpen(true);
+  };
+
   return (
     <AppContext.Provider value={{ data, setData }}>
       <main className={classes.main}>
@@ -96,27 +188,17 @@ export default function Dashboard() {
           setModalState={(state) => setModalIsOpen(state)}
           setModalForm={(form) => setModalForm(form)}
           renderTodoList={renderTodoList}
+          setType={setListType}
+          setTodoListData={setTodoListData}
+          setListType={setListType}
         />
 
         <section className={classes.dashboard}>
           <p className={classes.listname}>{todoListData.name}</p>
           <div className={classes["member__container"]}>
-            {/* <p>
-              Members: <span>A, B, C, D</span>
-            </p>
-            <button>Add Member+</button> */}
+            {renderMemberList(listType)}
           </div>
-          {/* Will need data from Navbar: Create a global handler */}
-          <TodoList
-            classes={classes}
-            setModalState={setModalIsOpen}
-            setModalForm={setModalForm}
-            listData={todoListData.tasks}
-            updateData={updateData}
-            listId={todoListData.id}
-            data={data}
-          />
-          {/* Will need data from TodoList: Create a global handler */}
+          {renderListByType(listType)}
         </section>
       </main>
     </AppContext.Provider>

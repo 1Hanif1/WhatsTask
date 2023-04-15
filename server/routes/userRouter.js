@@ -16,4 +16,15 @@ Router.route("/task/list/:id")
   .patch(authController.protect, userController.updateTask)
   .delete(authController.protect, userController.deleteTask);
 
+Router.route("/workspace")
+  .get(authController.protect, userController.getWorkspace)
+  .post(authController.protect, userController.createWorkspace)
+  .delete(authController.protect, userController.deleteWorkspace);
+
+Router.route("/workspace/:id")
+  .post(authController.protect, userController.addWorkspaceTask)
+  .delete(authController.protect, userController.deleteWorkspaceTask)
+  .patch(authController.protect, userController.updateWorkspaceTask)
+  .put(authController.protect, userController.addWorkspaceMember);
+
 module.exports = Router;

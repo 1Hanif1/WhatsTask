@@ -155,6 +155,7 @@ img {
 .mytask__list {
   color: black;
   background-color: #eef4ed;
+  margin-bottom: 1em;
 }
 .mytask__list .list {
   display: flex;
@@ -174,6 +175,11 @@ img {
   align-items: center;
   padding: 0.5em;
   cursor: pointer;
+  border: 0.1em solid #265caa;
+  margin-bottom: 1em;
+}
+.workspace__title:hover {
+  background-color: #265caa;
 }
 .workspace__title img {
   width: 2em;
@@ -409,6 +415,15 @@ img {
   color: white;
   padding: 0.5em 1em;
   cursor: pointer;
+}
+
+.subtask__input {
+  width: 100%;
+  text-align: center;
+  outline: none;
+  border-radius: 0;
+  border: solid #0b2545 0.1em;
+  padding: 0.2em 0em;
 }
 
 .subtask__container .task {

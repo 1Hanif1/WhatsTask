@@ -5,12 +5,21 @@ import todaysTask from "./images/todaystask.png";
 import caret from "./images/caret.svg";
 import DeleteFile from "./images/deleteFile.svg";
 import MyTaskListForm from "./Forms/MyTaskListForm";
+import CreateWorkspaceForm from "./Forms/CreateWorkspaceForm";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 export default function Navbar(props) {
-  const { classes, setModalState, setModalForm, renderTodoList } = props;
+  const {
+    classes,
+    setModalState,
+    setModalForm,
+    renderTodoList,
+    setType,
+    setTodoListData,
+    setListType,
+  } = props;
   const navigate = useNavigate();
   const { data, setData } = useContext(AppContext);
 
@@ -26,8 +35,12 @@ export default function Navbar(props) {
   };
 
   const openModal = function () {
-    // console.log("Hello");
     setModalForm(<MyTaskListForm classes={classes} />);
+    setModalState(true);
+  };
+
+  const openWorkspaceModal = function () {
+    setModalForm(<CreateWorkspaceForm classes={classes} />);
     setModalState(true);
   };
 
@@ -38,8 +51,19 @@ export default function Navbar(props) {
   };
 
   const loadListData = function (e) {
+    setType("personal");
     const id = e.target.dataset.id;
     userData.personalTaskList.forEach((list) => {
+      if (list._id == id) {
+        renderTodoList(list);
+      }
+    });
+  };
+
+  const loadWorkspaceData = function (e) {
+    setType("workspace");
+    const id = e.target.dataset.id;
+    userData.workspace.forEach((list) => {
       if (list._id == id) {
         renderTodoList(list);
       }
@@ -72,7 +96,52 @@ export default function Navbar(props) {
 
       // const resData = await res.json();
       // setData(resData);
-      list.remove();
+      list.style.display = "none";
+      setTodoListData({
+        id: "",
+        name: "No List Selected",
+        tasks: [],
+      });
+      setListType(null);
+    } catch (err) {
+      console.log(err);
+    }
+    // Update context
+  };
+
+  const deleteWorkspace = async function (e) {
+    const list = e.target.closest("div");
+    const listId = list.dataset.id;
+
+    // Call API to delete the List
+    try {
+      let res = await fetch(`http://127.0.0.1:3000/api/user/workspace`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: listId }),
+      });
+
+      if (!res.ok) return;
+
+      // res = await fetch("http://127.0.0.1:3000/api/user", {
+      //   method: "GET",
+      //   headers: {
+      //     Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      //   },
+      // });
+
+      // const resData = await res.json();
+      // setData(resData);
+      list.style.display = "none";
+      setTodoListData({
+        id: "",
+        name: "No List Selected",
+        tasks: [],
+      });
+      setListType(null);
     } catch (err) {
       console.log(err);
     }
@@ -137,19 +206,30 @@ export default function Navbar(props) {
           </div>
         </div>
         <div className={classes.workspace}>
-          <div className={classes["workspace__title"]} onClick={toggleDropDown}>
-            Workspace 1 <img src={caret} alt="" />
-          </div>
-          <div className={classes["workspace__list"]}>
-            {/* <p className={classes.list}>List 1</p> */}
-
-            <div className={classes.buttonwrapper}>
-              <button className={classes.addList}>Add New List+</button>
-            </div>
-          </div>
+          {/* <div className={classes["workspace__title"]}>Workspace 1</div> */}
+          {userData.workspace?.map((ws) => {
+            return (
+              <div
+                className={classes["workspace__title"]}
+                key={ws._id}
+                data-id={ws._id}
+                onClick={loadWorkspaceData}
+              >
+                {ws.name}
+                <img
+                  src={DeleteFile}
+                  style={{ width: "1.25em" }}
+                  onClick={deleteWorkspace}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div className={classes["navbar__button--createworkspace"]}>
+      <div
+        className={classes["navbar__button--createworkspace"]}
+        onClick={openWorkspaceModal}
+      >
         Create a workspace+
       </div>
     </nav>

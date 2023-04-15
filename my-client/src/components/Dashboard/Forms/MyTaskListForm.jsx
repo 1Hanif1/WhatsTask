@@ -30,6 +30,7 @@ export default function MyTaskListForm(props) {
   };
   return (
     <div>
+      <h1>Add New List</h1>
       <div className={classes.formInput}>
         <input id="newListName" type="text" placeholder="Enter List Name" />
       </div>
