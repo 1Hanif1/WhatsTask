@@ -5,7 +5,17 @@ import downloadFile from "./images/downloadFile.svg";
 import deleteFile from "./images/deleteFile.svg";
 
 export default function ActiveTask(props) {
-  const { classes, task, listId, updateList, taskId } = props;
+  const {
+    classes,
+    task,
+    listId,
+    updateList,
+    taskId,
+    setSelectedTask,
+    setCurrentTaskId,
+    setMembers,
+  } = props;
+
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
   const [subtasks, setSubtasks] = useState([]);
@@ -64,6 +74,8 @@ export default function ActiveTask(props) {
       res = await res.json();
       updateList(updatedTask);
       setIsChanged(false);
+      setSelectedTask(null);
+      setCurrentTaskId(null);
     } catch (err) {
       console.log(err);
       setError("There was an error");

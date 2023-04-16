@@ -22,9 +22,19 @@ export default function Navbar(props) {
   } = props;
   const navigate = useNavigate();
   const { data, setData } = useContext(AppContext);
-
+  const [numTask, setNumTask] = useState(0);
   const [userData, setUserData] = useState(data);
-  useEffect(() => setUserData(data), [data]);
+  useEffect(() => {
+    setUserData(data);
+    let count = 0;
+    data.personalTaskList?.forEach((list) => {
+      count += list.tasks.length;
+    });
+    data.workspace?.forEach((wk) => {
+      count += wk.tasks.length;
+    });
+    setNumTask(count);
+  }, [data]);
 
   const toggleDropDown = function (e) {
     if (e.target.nodeName == "IMG") return;
@@ -160,18 +170,13 @@ export default function Navbar(props) {
       </div>
       <div className={classes["navbar__buttons"]}>
         <div className={classes.buttons}>
-          <div>
-            <img src={settings} alt="" /> Settings
-          </div>
-        </div>
-        <div className={classes.buttons}>
           <div onClick={logoutHandler}>
             <img src={logout} alt="" /> Logout
           </div>
         </div>
         <div className={classes.todaytask}>
-          <img src={todaysTask} alt="" /> Today's Task
-          <span className={classes["numtask"]}>5</span>
+          <img src={todaysTask} alt="" /> All Task
+          <span className={classes["numtask"]}>{numTask}</span>
         </div>
       </div>
       <div className={classes["navbar__taskcontainer"]}>

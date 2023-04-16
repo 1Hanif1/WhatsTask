@@ -5,7 +5,17 @@ import downloadFile from "./images/downloadFile.svg";
 import deleteFile from "./images/deleteFile.svg";
 
 export default function ActiveTask(props) {
-  const { classes, task, listId, updateList, taskId, memberData } = props;
+  const {
+    classes,
+    task,
+    listId,
+    updateList,
+    taskId,
+    memberData,
+    setSelectedTask,
+    setCurrentTaskId,
+    setMembers,
+  } = props;
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
   const [subtasks, setSubtasks] = useState([]);
@@ -32,8 +42,11 @@ export default function ActiveTask(props) {
 
   const assignHandler = function (e) {
     const member = e.target.value;
-    setAssigned(member);
-    task.member = member;
+    const selectedOption = e.target.options[e.target.selectedIndex]; // Access the selected option
+    const memberEmail = selectedOption.getAttribute("data-email");
+    // console.log(memberEmail);
+    setAssigned({ member: member, email: memberEmail });
+    task.member = { member: member, email: memberEmail };
     setIsChanged(true);
   };
 
@@ -76,6 +89,8 @@ export default function ActiveTask(props) {
       res = await res.json();
       updateList(updatedTask);
       setIsChanged(false);
+      setSelectedTask(null);
+      setCurrentTaskId(null);
     } catch (err) {
       console.log(err);
       setError("There was an error");
@@ -153,14 +168,20 @@ export default function ActiveTask(props) {
           <div className={classes.activetask__assign}>
             Assigned to
             <select onChange={assignHandler}>
-              <option value={task.member}>
-                {task.member ? task.member : "No member selected"}
+              <option value={task.member.member}>
+                {task.member ? task.member.member : "No member selected"}
               </option>
-              {memberData.map((member) => (
-                <option key={member._id} value={member.name}>
-                  {member.name}
-                </option>
-              ))}
+              {memberData.map((member) => {
+                return (
+                  <option
+                    key={member._id}
+                    data-email={member.email}
+                    value={member.name}
+                  >
+                    {member.name}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div className={classes.subtask}>

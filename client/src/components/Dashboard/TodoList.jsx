@@ -159,6 +159,8 @@ export default function TodoList(props) {
         listId={listId}
         taskId={currentTaskId}
         updateList={updateList}
+        setSelectedTask={setSelectedTask}
+        setCurrentTaskId={setCurrentTaskId}
       />
     </>
   );

@@ -136,8 +136,8 @@ export default function Dashboard() {
         newDataCopy = newData.data;
       } else if (newData.type == "newMember") {
         newDataCopy = newData.data;
-        console.log(newData);
-        console.log(newDataCopy);
+        // console.log(newData);
+        // console.log(newDataCopy);
         newDataCopy.workspace.forEach((list) => {
           if (list._id == todoListData.id) {
             setTodoListData((_) => {
@@ -201,6 +201,8 @@ export default function Dashboard() {
         classes={classes}
         workspaceId={todoListData.id}
         updateData={updateWorkspaceData}
+        setSelectedTask={setSelectedTask}
+        setCurrentTaskId={setCurrentTaskId}
       />
     );
     setModalIsOpen(true);

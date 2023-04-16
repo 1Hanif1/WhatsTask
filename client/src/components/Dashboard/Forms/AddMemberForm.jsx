@@ -32,7 +32,7 @@ export default function AddMemberForm(props) {
 
           setSelectedTask(null);
           setCurrentTaskId(null);
-          setMembers([]);
+          // setMembers([]);
         }
       })
       .catch((err) => setError(err));
