@@ -32,6 +32,43 @@ img {
   grid-template-columns: 1fr 3fr;
 }
 
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: hsl(0, 0%, 0%, 0.5);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: white;
+  padding: 2em;
+  border-radius: 0.25em;
+  z-index: 20;
+}
+
+.modal div {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.modal div > * {
+  margin-bottom: 0.5em;
+}
+
+.modal button {
+  background-color: #265caa;
+  color: white;
+  border: none;
+  text-align: center;
+  padding: 0.25em 2em;
+}
+
 .navbar {
   background-color: #0b2545;
   font-size: 1vw;
@@ -50,7 +87,11 @@ img {
   width: 1.75em;
   margin-right: 1em;
 }
-.navbar__buttons a,
+
+.navbar__buttons div {
+  cursor: pointer;
+}
+.navbar__buttons div,
 .navbar__buttons .todaytask {
   color: white;
   display: flex;
@@ -114,6 +155,7 @@ img {
 .mytask__list {
   color: black;
   background-color: #eef4ed;
+  margin-bottom: 1em;
 }
 .mytask__list .list {
   display: flex;
@@ -133,6 +175,11 @@ img {
   align-items: center;
   padding: 0.5em;
   cursor: pointer;
+  border: 0.1em solid #265caa;
+  margin-bottom: 1em;
+}
+.workspace__title:hover {
+  background-color: #265caa;
 }
 .workspace__title img {
   width: 2em;
@@ -249,12 +296,6 @@ img {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  transition: color 100ms ease-in-out;
-  cursor: pointer;
-}
-.todolist__active .task:hover,
-.todolist__completed .task:hover {
-  color: #265caa;
 }
 .todolist__active .checkmark,
 .todolist__completed .checkmark {
@@ -280,8 +321,8 @@ img {
 }
 
 .activetask {
-  padding: 1.5em;
   position: relative;
+  padding: 1.5em;
 }
 .activetask > * {
   margin-bottom: 1em;
@@ -292,7 +333,8 @@ img {
   font-size: 1.5em;
 }
 .activetask__deadline,
-.activetask__status {
+.activetask__status,
+.activetask__assign {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -300,8 +342,10 @@ img {
   color: white;
   padding: 0.5em;
 }
+
 .activetask__deadline input,
-.activetask__status input {
+.activetask__status input,
+.activetask__assign select {
   width: 80%;
   height: 2.5em;
   font-size: 1em;
@@ -309,6 +353,32 @@ img {
   padding: 0.25em;
   outline: none;
 }
+
+.activetask__deadline {
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+}
+.activetask__deadline p {
+  font-size: 1.25em;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25em;
+}
+.activetask__deadline p > span {
+  display: block;
+}
+.activetask__deadline input {
+  flex-direction: column;
+  width: 100%;
+  font-size: 0.75em;
+}
+
+.activetask__assign select {
+  /* display: flex; */
+  width: 70%;
+}
+
 .activetask__status select {
   background-color: white;
   font-size: 1.25em;
@@ -323,7 +393,18 @@ img {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.activetask__update .error {
+  color: white;
+  font-size: 1.25em;
+  margin-bottom: 0.5em;
+}
+
 .activetask__update button {
   background-color: #0b2545;
   color: white;
@@ -363,6 +444,15 @@ img {
   color: white;
   padding: 0.5em 1em;
   cursor: pointer;
+}
+
+.subtask__input {
+  width: 100%;
+  text-align: center;
+  outline: none;
+  border-radius: 0;
+  border: solid #0b2545 0.1em;
+  padding: 0.2em 0em;
 }
 
 .subtask__container .task {
@@ -426,8 +516,12 @@ img {
   display: none;
 }
 
-.form {
-  line-height: 2;
-  height: 30rem;
+.hide {
+  display: none;
 }
+
+.rotate {
+  transform: rotate(180deg);
+}
+
 /*# sourceMappingURL=style.css.map */

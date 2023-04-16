@@ -1,9 +1,11 @@
 const Data = require("../models/Data");
 const AppError = require("../utils/appError");
 const catchAsyncError = require("../utils/catchAsync");
+
 // Get user dashboard data
 exports.getUserData = catchAsyncError(async (req, res, next) => {
   const userData = await Data.find({ uId: req.user._id }).populate("user");
+  console.log(req.user);
   res.json({
     status: "Success",
     data: userData[0],

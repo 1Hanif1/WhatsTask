@@ -1,40 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import RootLayout from "./routes/RootLayout";
-import "./index.css";
+import { RouterProvider, createBrowserRouter, Route } from "react-router-dom";
+import "./main.css";
 import Home from "./pages/Home";
-import AuthenticationPage, {
-  action as authAction,
-} from "./pages/Authentication";
-import ErrorPage from "./pages/Error";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import { loader as dataLoader } from "./components/DashboardComponent";
-import { action as taskAction } from "./components/DashboardComponent";
+import ProtectedRoute from "./pages/ProtectedRoute";
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-    ],
+    element: <Home />,
   },
   {
     path: "/auth",
-    errorElement: <ErrorPage />,
-    element: <AuthenticationPage />,
-    action: authAction,
+    element: <Auth />,
   },
   {
     path: "/dashboard",
-    errorElement: <ErrorPage />,
+    element: <ProtectedRoute element={<Dashboard />} />,
+  },
+  {
+    path: "/dashboard",
     element: <Dashboard />,
-    loader: dataLoader,
-    action: taskAction,
   },
 ]);
 

@@ -1,7 +1,14 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../../../AppContext";
 export default function AddMemberForm(props) {
-  const { classes, workspaceId, updateData } = props;
+  const {
+    classes,
+    workspaceId,
+    updateData,
+    setSelectedTask,
+    setCurrentTaskId,
+    setMembers,
+  } = props;
   const [error, setError] = useState("");
   const { data, setData } = useContext(AppContext);
 
@@ -20,7 +27,13 @@ export default function AddMemberForm(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        setData(data.data);
+        if (data.data) {
+          updateData({ data: data.data, type: "newMember" });
+
+          setSelectedTask(null);
+          setCurrentTaskId(null);
+          setMembers([]);
+        }
       })
       .catch((err) => setError(err));
   };
@@ -30,7 +43,7 @@ export default function AddMemberForm(props) {
       <div className={classes.formInput}>
         <input type="text" placeholder="Add their Email" />
       </div>
-      <div>{error}</div>
+      {/* {error && <div>{error}</div>} */}
       <div className={classes.formButton}>
         <button onClick={addMemberHandler}>Add Member</button>
       </div>

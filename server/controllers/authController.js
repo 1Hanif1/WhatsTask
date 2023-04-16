@@ -66,6 +66,7 @@ exports.login = catchAsync(async (req, res, next) => {
       userData = await Data.create({
         uId: user._id,
         user: user._id,
+        phoneNumber: user.phoneNumber,
       });
     } catch (error) {
       console.log(error);

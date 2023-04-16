@@ -1,15 +1,20 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AppContext } from "../../AppContext";
 import checkmark from "./images/checkmark.svg";
 import downloadFile from "./images/downloadFile.svg";
 import deleteFile from "./images/deleteFile.svg";
 
 export default function ActiveTask(props) {
-  const { classes, task, listId, updateList, taskId } = props;
+  const { classes, task, listId, updateList, taskId, memberData } = props;
   const [status, setStatus] = useState("");
   const [deadline, setDeadline] = useState("");
   const [subtasks, setSubtasks] = useState([]);
+  const [assigned, setAssigned] = useState("");
   const [error, setError] = useState("");
+  const [isChanged, setIsChanged] = useState(false);
+  // useEffect(() => {
+  //   setIsChanged(true);
+  // }, [status, deadline, subtasks, assigned]);
 
   const subtaskHandler = function (e) {
     const subtaskElement = e.target;
@@ -25,16 +30,26 @@ export default function ActiveTask(props) {
     }
   };
 
+  const assignHandler = function (e) {
+    const member = e.target.value;
+    setAssigned(member);
+    task.member = member;
+    setIsChanged(true);
+  };
+
   const statusHandler = function (e) {
     const status = e.target.value;
     setStatus(status);
     task.status = status;
+    setIsChanged(true);
   };
 
   const deadlineHandler = function (e) {
     const deadline = e.target.value;
+    // console.log(deadline);
     setDeadline(deadline);
     task.deadline = deadline;
+    setIsChanged(true);
   };
 
   const submitChanges = async function () {
@@ -43,12 +58,11 @@ export default function ActiveTask(props) {
         taskId,
         data: task,
       };
-      // console.log(updatedTask);
 
       // Call API to update data at backend
       const jwt = localStorage.getItem("jwt");
       let res = await fetch(
-        `http://127.0.0.1:3000/api/user/task/list/${listId}`,
+        `http://127.0.0.1:3000/api/user/workspace/${listId}`,
         {
           method: "PATCH",
           headers: {
@@ -61,11 +75,15 @@ export default function ActiveTask(props) {
 
       res = await res.json();
       updateList(updatedTask);
+      setIsChanged(false);
     } catch (err) {
       console.log(err);
       setError("There was an error");
       setTimeout(setError(""), 3000);
+      return;
     }
+    setError("Task Updated Succesfully");
+    setTimeout(setError(""), 3000);
   };
 
   const addSubtask = function (e) {
@@ -90,6 +108,16 @@ export default function ActiveTask(props) {
     };
     task.subtasks.push(newSubtask);
     setSubtasks((prev) => [...prev, newSubtask]);
+    setIsChanged(true);
+  };
+
+  const renderDeadline = (deadline) => {
+    if (deadline.includes("T")) {
+      deadline = deadline.slice(0, deadline.length - 5);
+      const deadlineArray = deadline.split("T");
+      return `${deadlineArray[0].split("-").reverse().join("-")}`;
+    }
+    return deadline.split("-").reverse().join("-");
   };
 
   return (
@@ -107,12 +135,33 @@ export default function ActiveTask(props) {
             </select>
           </div>
           <div className={classes.activetask__deadline}>
-            Deadline{" "}
+            <p>
+              <span>Deadline: </span>
+              <span>{`${
+                task.deadline
+                  ? renderDeadline(task.deadline)
+                  : "No deadline set"
+              }`}</span>
+            </p>
             <input
-              type="datetime-local"
-              value={deadline}
+              type="date"
+              value={task.deadline?.toString().slice(0, task.length - 1)}
               onChange={deadlineHandler}
+              min={new Date().toISOString().slice(0, 10)}
             />
+          </div>
+          <div className={classes.activetask__assign}>
+            Assigned to
+            <select onChange={assignHandler}>
+              <option value={task.member}>
+                {task.member ? task.member : "No member selected"}
+              </option>
+              {memberData.map((member) => (
+                <option key={member._id} value={member.name}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className={classes.subtask}>
             <p className={classes.subtask__title}>Subtasks</p>
@@ -180,7 +229,11 @@ export default function ActiveTask(props) {
           </div> */}
           <div className={classes.activetask__update}>
             <p className={classes.error}>{error}</p>
-            <button onClick={submitChanges}>Update</button>
+            {isChanged ? (
+              <button onClick={submitChanges}>Update</button>
+            ) : (
+              <></>
+            )}
           </div>
         </>
       )}

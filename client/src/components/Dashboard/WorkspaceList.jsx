@@ -4,10 +4,25 @@ import WorkspaceActiveTask from "./WorkspaceActiveTask";
 import { useContext, useState } from "react";
 import { AppContext } from "../../AppContext";
 export default function WorkspaceList(props) {
-  const { classes, setModalState, setModalForm, listData, updateData, listId } =
-    props;
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [currentTaskId, setCurrentTaskId] = useState(null);
+  const {
+    classes,
+    setModalState,
+    setModalForm,
+    listData,
+    updateData,
+    listId,
+    memberData,
+    selectedTask,
+    setSelectedTask,
+    currentTaskId,
+    setCurrentTaskId,
+    members,
+    setMembers,
+  } = props;
+  // const [selectedTask, setSelectedTask] = useState(null);
+  // const [currentTaskId, setCurrentTaskId] = useState(null);
+  // const [members, setMembers] = useState(memberData);
+  const taskFunctions = { setSelectedTask, setCurrentTaskId, setMembers };
   const { data, setData } = useContext(AppContext);
 
   const setActiveTaskHandler = function (e) {
@@ -16,6 +31,7 @@ export default function WorkspaceList(props) {
       if (task._id == id) {
         setSelectedTask(task);
         setCurrentTaskId(task._id);
+        setMembers(memberData);
       }
     });
   };
@@ -86,6 +102,8 @@ export default function WorkspaceList(props) {
     updateData({ data: resData.data, type: "deleteTask" });
 
     setSelectedTask(null);
+    setCurrentTaskId(null);
+    setMembers(null);
   };
 
   return (
@@ -161,7 +179,11 @@ export default function WorkspaceList(props) {
         task={selectedTask}
         listId={listId}
         taskId={currentTaskId}
+        memberData={members}
         updateList={updateList}
+        setSelectedTask={setSelectedTask}
+        setCurrentTaskId={setCurrentTaskId}
+        setMembers={setMembers}
       />
     </>
   );
