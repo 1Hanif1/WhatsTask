@@ -127,7 +127,10 @@ const workspaceSubSchema = new mongoose.Schema({
         subtasks: [taskSubSchema],
         attachments: [attachmentSubSchema],
         status: { type: String, default: "incomplete" },
-        member: { type: String, default: "" },
+        member: {
+          member: { type: String, default: "" },
+          email: { type: String, default: "" },
+        },
       },
     ],
     default: [],
@@ -138,6 +141,7 @@ const workspaceSubSchema = new mongoose.Schema({
 const schema = new mongoose.Schema({
   uId: { type: String, unique: true },
   user: { type: mongoose.Schema.ObjectId, ref: "User" },
+  userName: { type: String },
   phoneNumber: { type: String, unique: true },
   personalTaskList: {
     type: [

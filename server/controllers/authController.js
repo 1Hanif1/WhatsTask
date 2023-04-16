@@ -67,6 +67,7 @@ exports.login = catchAsync(async (req, res, next) => {
         uId: user._id,
         user: user._id,
         phoneNumber: user.phoneNumber,
+        userName: user.name,
       });
     } catch (error) {
       console.log(error);
