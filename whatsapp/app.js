@@ -14,6 +14,7 @@
 const mongoose = require("mongoose");
 const Data = require("./Data");
 const dotenv = require("dotenv");
+const cron = require("node-cron");
 dotenv.config({ path: "./config.env" });
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
@@ -45,13 +46,8 @@ mongoose
   });
 
 const getTasks = async () => {
-  // Get Data from Database
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 2);
   // Read all user data
-  const data = await Data.find({
-    "personalTaskList.tasks.deadline": { $lt: tomorrow },
-  });
+  const data = await Data.find({});
 
   // Initialize a task array
   const tasks = [];
@@ -64,11 +60,11 @@ const getTasks = async () => {
 
       list.tasks.forEach((task) => {
         let date = new Date();
-        date.setDate(date.getDate() + 2);
+        date.setDate(date.getDate() + 1);
         date = date.toISOString().split("T")[0];
         if (
           task.deadline &&
-          date === task.deadline.toISOString().split("T")[0] &&
+          date == task.deadline.toISOString().split("T")[0] &&
           task.status == "incomplete"
         ) {
           let message = `*${doc.userName}*! Tomorrow is the last date to finish the task *${task.name}*`;
@@ -89,17 +85,19 @@ const getTasks = async () => {
       // console.log(wk);
       wk.tasks.forEach((task) => {
         let date = new Date();
-        date.setDate(date.getDate() + 2);
+        date.setDate(date.getDate() + 1);
         date = date.toISOString().split("T")[0];
+        // console.log(date);
+        // console.log(task.deadline.toISOString().split("T")[0]);
         if (
           task.deadline &&
-          date === task.deadline.toISOString().split("T")[0] &&
+          date == task.deadline.toISOString().split("T")[0] &&
           task.status == "incomplete"
         ) {
           let message;
           // if no member assigned
           if (task.member.email) {
-            // console.log(task);
+            console.log(task);
             message = `*${task.member.member}*! Tomorrow is the last date to finish the task *${task.name}* assigned by *${doc.userName}*.`;
             if (task.subtasks) {
               message += `\nYou have the follwoing Subtasks:\n`;
@@ -160,10 +158,17 @@ const sendReminders = async (tasks) => {
   }
 };
 
-// Schedule the function to run periodically
-const cron = require("node-cron");
+let remindersSent = false;
 
 cron.schedule("* * * * *", async () => {
-  const tasks = await getTasks();
-  await sendReminders(tasks);
+  if (!remindersSent) {
+    const tasks = await getTasks();
+    await sendReminders(tasks);
+    remindersSent = true;
+  }
+});
+
+// Reset remindersSent flag to false after cron job has completed
+cron.schedule("59 23 * * *", () => {
+  remindersSent = false;
 });
